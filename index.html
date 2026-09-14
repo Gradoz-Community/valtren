@@ -10,12 +10,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 24 24' fill='%234698c6'><path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/></svg>">
 <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Valtren%20Sistema%20de%20Cotizaciones%22%2C%22short_name%22%3A%22Valtren%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f5f7%22%2C%22theme_color%22%3A%22%234698c6%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2FSVG%2BXML%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27192%27%20height%3D%27192%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27%234698c6%27%3E%3Cpath%20d%3D%27M19%203H5c-1.1%200-2%20.9-2%202v14c0%201.1.9%202%202%202h14c1.1%200%202-.9%202-2V5c0-1.1-.9-2-2-2zm-5%2014H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2FSVG%2BXML%22%7D%5D%7D">
 <title>valtren · Sistema de Cotizaciones</title>
-<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="favicon.svg" />
-<link rel="shortcut icon" href="favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="valtren" />
-<link rel="manifest" href="site.webmanifest" />
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,6 +159,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
 .nav-btn .ico{font-size:22px;line-height:1}
 .nav-btn.active{color:var(--blue)}
 
+/* PWA BANNER & MODAL OS ENHANCEMENTS */
 .pwa-banner{
   background:linear-gradient(135deg, var(--blue), var(--blue-dark));
   color:#fff;padding:16px;border-radius:var(--radius);margin-bottom:16px;
@@ -174,6 +170,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
 .pwa-banner p{margin:0;font-size:13px;opacity:0.9}
 .pwa-install-btn{background:#fff;color:var(--blue);padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;white-space:nowrap}
 .ios-steps{font-size:12px;background:rgba(255,255,255,0.15);padding:10px;border-radius:8px;line-height:1.4}
+.os-badge{display:inline-block;font-size:10px;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:6px;margin-bottom:4px;font-weight:700;text-transform:uppercase}
 
 /* MODAL PERSONALIZADO (Sin usar alert ni confirm) */
 .custom-modal-overlay{
@@ -244,7 +241,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
 
 <body>
 <header class="app-header">
-  <div class="brand"><img src="logo.png"style="height: 19px;"alt="" srcset=""><small>Generador de Documentos</small></div>
+  <div class="brand">valtren<small id="osStatusIndicator">Sistema de Cotizaciones</small></div>
   <div class="header-actions">
     <button class="install-top-btn" id="installTopBtn" style="display:none;">Instalar App</button>
     <button class="clear-btn" id="clearBtn">Nueva cotización</button>
@@ -458,51 +455,114 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
 }
 
-// Gestión de instalación PWA (Android / iOS / Escritorio)
+// ----------------------------------------------------
+// DETECCIÓN AVANZADA DE SISTEMA OPERATIVO Y DISPOSITIVO
+// ----------------------------------------------------
+function detectOS() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const platform = navigator.platform || '';
+
+  // Detección iOS (iPhone, iPad, iPod con soporte para iPadOS modernos)
+  const isIOSDevice = /iPad|iPhone|iPod/.test(ua) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(platform));
+  if (isIOSDevice) {
+    return { name: 'iOS', type: 'ios', mobile: true };
+  }
+
+  // Detección Android
+  if (/android/i.test(ua)) {
+    return { name: 'Android', type: 'android', mobile: true };
+  }
+
+  // Detección Otros Móviles
+  if (/iPad|iPhone|iPod|android|blackberry|mini|windows ce|palm/i.test(ua)) {
+    return { name: 'Móvil', type: 'mobile', mobile: true };
+  }
+
+  // Escritorio (Windows, Mac, Linux)
+  if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(platform) || /Mac OS X/.test(ua)) {
+    return { name: 'macOS', type: 'desktop', mobile: false };
+  }
+  if (/Win32|Win64|Windows|WinCE/.test(platform)) {
+    return { name: 'Windows', type: 'desktop', mobile: false };
+  }
+  return { name: 'Escritorio', type: 'desktop', mobile: false };
+}
+
 let deferredPrompt = null;
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const currentOS = detectOS();
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
 function initPwaInstall() {
-  if (isStandalone) return; // Ya está instalada
+  // Actualizar indicador en el encabezado con el OS detectado
+  $('#osStatusIndicator').text(`Cotizaciones · ${currentOS.name}`);
 
+  if (isStandalone) {
+    // Ya está ejecutándose como PWA instalada
+    return; 
+  }
+
+  // Escuchar evento de instalación nativa (Android / Chrome Desktop)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     renderInstallBanner('android');
   });
 
-  if (isIOS) {
-    renderInstallBanner('ios');
-  }
+  // Mostrar banners específicos según el SO detectado si no hay prompt nativo disponible
+  setTimeout(() => {
+    if (!deferredPrompt && !isStandalone) {
+      if (currentOS.type === 'ios') {
+        renderInstallBanner('ios');
+      } else if (currentOS.type === 'android') {
+        renderInstallBanner('android-manual');
+      } else if (currentOS.type === 'desktop') {
+        renderInstallBanner('desktop');
+      }
+    }
+  }, 600);
 }
 
 function renderInstallBanner(type) {
   const $container = $('#pwaBannerContainer');
   $('#installTopBtn').show();
 
-  if (type === 'android') {
+  if (type === 'android' || type === 'android-manual') {
     $container.html(`
       <div class="pwa-banner">
+        <span class="os-badge">Android Detectado</span>
         <div class="pwa-banner-content">
           <div>
-            <h4>Instalar Valtren</h4>
-            <p>Accede rápidamente y úsala sin conexión a internet.</p>
+            <h4>Instala Valtren en tu dispositivo</h4>
+            <p>Accede con un toque y trabaja sin conexión a internet.</p>
           </div>
-          <button class="pwa-install-btn" id="pwaTriggerBtn">Instalar</button>
+          <button class="pwa-install-btn" id="pwaTriggerBtn">Instalar App</button>
         </div>
       </div>
     `);
   } else if (type === 'ios') {
     $container.html(`
       <div class="pwa-banner">
+        <span class="os-badge">iOS / iPhone / iPad Detectado</span>
         <div>
-          <h4>Instalar en tu iPhone o iPad</h4>
+          <h4>Instala Valtren en tu Pantalla de Inicio</h4>
           <p>Disfruta de la experiencia de aplicación nativa:</p>
         </div>
-        <div class="ios-steps">
-          1. Toca el botón <b>Compartir</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> en tu barra de Safari.<br>
-          2. Selecciona <b>"Agregar a Inicio"</b> ⊕ en el menú desplegable.
+        <div class="ios-steps" style="margin-top:8px">
+          1. Toca el botón <b>Compartir</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> en tu navegador Safari.<br>
+          2. Desplázate y selecciona <b>"Agregar a Inicio"</b> ⊕.
+        </div>
+      </div>
+    `);
+  } else if (type === 'desktop') {
+    $container.html(`
+      <div class="pwa-banner">
+        <span class="os-badge">Escritorio (${currentOS.name})</span>
+        <div class="pwa-banner-content">
+          <div>
+            <h4>Instalar Valtren en tu Computadora</h4>
+            <p>Ten la aplicación lista en tu escritorio para generar cotizaciones al instante.</p>
+          </div>
+          <button class="pwa-install-btn" id="pwaTriggerBtn">Instalar</button>
         </div>
       </div>
     `);
@@ -518,10 +578,12 @@ $(document).on('click', '#pwaTriggerBtn, #installTopBtn', async () => {
       $('#installTopBtn').hide();
     }
     deferredPrompt = null;
-  } else if (isIOS) {
-    showCustomModal('Instalación en iOS', 'Para instalar en iOS, toca el botón Compartir en Safari y selecciona "Agregar a Inicio".', false, null);
+  } else if (currentOS.type === 'ios') {
+    showCustomModal('Instalación en iOS', 'Para instalar esta PWA en tu dispositivo iOS, abre este sitio en Safari, presiona el botón Compartir y selecciona "Agregar a Inicio".', false, null);
+  } else if (currentOS.type === 'android') {
+    showCustomModal('Instalación en Android', 'Abre el menú de opciones de tu navegador (los tres puntos arriba a la derecha) y selecciona "Instalar aplicación" o "Agregar a la pantalla principal".', false, null);
   } else {
-    showCustomModal('Instalación PWA', 'Esta aplicación ya se puede instalar desde el menú de opciones de tu navegador (Añadir a la pantalla de inicio o Instalar aplicación).', false, null);
+    showCustomModal('Instalación PWA', 'Haz clic en el icono de instalación ubicado en la barra de direcciones de tu navegador para instalar la aplicación en tu computadora.', false, null);
   }
 });
 
@@ -543,7 +605,6 @@ function showCustomModal(title, message, showCancel = true, onConfirm = null) {
 
   $('#customModalOverlay').css('display', 'flex');
 
-  // Limpiar eventos anteriores
   $confirmBtn.off('click').on('click', () => {
     $('#customModalOverlay').hide();
     if (typeof onConfirm === 'function') onConfirm(true);
@@ -861,7 +922,7 @@ $(function(){
     const history=loadHistory().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
     const $list=$('#historyList').empty();
     if(!history.length){
-      $list.html('<div class="history-empty">Aún no hay cotizaciones guardadas.</div>');
+      $list.html('<div class="history-empty" style="text-align:center;color:var(--muted);padding:20px">Aún no hay cotizaciones guardadas.</div>');
       return;
     }
     history.forEach(q=>{
