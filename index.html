@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4698c6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Valtren">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 24 24' fill='%234698c6'><path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/></svg>">
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Valtren%20Sistema%20de%20Cotizaciones%22%2C%22short_name%22%3A%22Valtren%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f5f7%22%2C%22theme_color%22%3A%22%234698c6%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2FSVG%2BXML%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27192%27%20height%3D%27192%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27%234698c6%27%3E%3Cpath%20d%3D%27M19%203H5c-1.1%200-2%20.9-2%202v14c0%201.1.9%202%202%202h14c1.1%200%202-.9%202-2V5c0-1.1-.9-2-2-2zm-5%2014H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2FSVG%2BXML%22%7D%5D%7D">
+<title>valtren · Sistema de Cotizaciones</title>
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="valtren" />
+<link rel="manifest" href="site.webmanifest" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --blue:#4698c6;
+  --blue-dark:#0056b3;
+  --ink:#1d1d1f;
+  --muted:#86868b;
+  --line:#d2d2d7;
+  --card:#ffffff;
+  --bg:#f5f5f7;
+  --danger:#ff3b30;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body{min-height:100vh;padding-bottom:86px}
+button,input,textarea,select{font:inherit}
+button{border:0;cursor:pointer;transition:all 0.2s ease}
+
+/* HEADER Y NAVEGACIÓN MÓVIL */
+.app-header{
+  position:fixed;z-index:50;top:0;left:0;right:0;height:62px;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,0,0,.08);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+}
+.brand{font-weight:700;letter-spacing:-.5px;font-size:18px}
+.brand small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;letter-spacing:0}
+.header-actions{display:flex;gap:8px;align-items:center}
+.install-top-btn{display:none;background:var(--blue);color:#fff;padding:8px 12px;border-radius:10px;font-weight:600;font-size:13px}
+.clear-btn{background:rgba(255,59,48,0.1);color:var(--danger);padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px}
+
+main{padding:82px 14px 20px;max-width:720px;margin:auto}
+.tab{display:none;animation:fadeIn 0.3s ease}
+.tab.active{display:block}
+@keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+.section-title{font-size:24px;font-weight:700;margin:8px 2px 18px;letter-spacing:-0.5px}
+
+.card{
+  background:var(--card);border:1px solid rgba(0,0,0,.05);border-radius:var(--radius);
+  padding:20px;margin-bottom:16px;box-shadow:0 4px 24px rgba(0,0,0,.04)
+}
+.card h3{margin:0 0 16px;font-size:15px;font-weight:600;color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-size:12px;color:var(--muted);font-weight:600}
+input,textarea,select{
+  width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:12px 14px;outline:none;transition:.15s;font-size:14px;
+}
+textarea{min-height:80px;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,122,255,.15)}
+
+/* CONCEPTOS */
+.items-head{display:none}
+.item-row{
+  display:grid;grid-template-columns:1fr 60px 100px 40px;gap:8px;align-items:center;margin-bottom:12px;
+  background:#f9f9fb;padding:12px;border-radius:12px;border:1px solid var(--line);
+}
+.item-row input{padding:10px;font-size:14px}
+.item-row .del{height:40px;width:40px;border-radius:10px;background:rgba(255,59,48,0.1);color:var(--danger);font-size:20px}
+.add-btn{
+  width:100%;background:rgba(0,122,255,0.08);color:var(--blue);
+  border-radius:10px;padding:14px;font-weight:600;margin-top:8px;font-size:14px;
+}
+.add-btn:hover{background:rgba(0,122,255,0.15)}
+.small-note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+.logo-wrap{display:flex;align-items:center;gap:16px}
+.logo-preview{width:150px;height:150px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;overflow:hidden;color:#aaa;font-size:11px;font-weight:600;text-align:center;background:#fafafa}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.file-btn{position:relative;overflow:hidden;background:#e5e5ea;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;color:var(--ink)}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+.summary{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:15px;align-items:center}
+.summary strong{font-size:17px;font-weight:600}
+.summary .total{padding-top:12px;border-top:1px solid var(--line);margin-top:4px;font-weight:700;font-size:20px}
+.save-state{font-size:12px;color:var(--muted);text-align:center;margin:12px 0 0}
+.save-current{width:100%;margin-top:16px;background:var(--blue);color:#fff;border-radius:12px;padding:14px;font-weight:600;font-size:15px;box-shadow:0 4px 12px rgba(0,122,255,.25)}
+
+.preview-shell{padding:0;margin:0 -2px}
+.preview-note{font-size:12px;color:var(--muted);margin:0 2px 12px}
+.pdf-frame{
+  width:100%;overflow:auto;border-radius:14px;
+  box-shadow:0 8px 30px rgba(0,0,0,.1);background:#d1d1d6;padding:12px;
+}
+#pdf_template{
+  width:210mm;height:296.8mm;background:#fff;position:relative;overflow:hidden;
+  margin:0 auto;color:#1d1d1f;font-family:Arial,Helvetica,sans-serif;
+  box-shadow:0 4px 16px rgba(0,0,0,.08); page-break-after: avoid; break-after: avoid;
+}
+.pdf-top{height:42mm;background:var(--blue);color:#fff;padding:6mm 10mm 5mm;position:relative}
+.pdf-top h1{margin:0 0 4mm;font-family:"Bebas Neue",Arial,sans-serif;font-stretch:condensed;font-size:40px;line-height:1;font-weight:900;letter-spacing:1px}
+.pdf-top .issuer{font-size:10pt;line-height:1.3}
+.pdf-logo{position:absolute;right:10mm;top:6mm;width:30mm;height:16mm;display:flex;align-items:center;justify-content:flex-end}
+.pdf-logo img{max-height:150px;object-fit:contain}
+.pdf-meta{position:absolute;right:10mm;bottom:6mm;text-align:right;font-size:8.5pt;line-height:1.4}
+.pdf-client{height:42mm;padding:6mm 8.5mm 4mm;display:grid;grid-template-columns:1fr 1fr;gap:11mm}
+.pdf-client .label{font-size:11.5pt;color:var(--blue);font-weight:400;margin-bottom:2mm}
+.pdf-client .value{font-size:11pt;font-weight:800;line-height:1.08;margin-bottom:1.5mm}
+.pdf-client .line{font-size:9.5pt;color:#555;line-height:1.35}
+.client-address-wrap{position:relative;padding-right:25mm}
+.client-cp{position:absolute;right:0;top:0;font-size:9.5pt;color:#555;line-height:1.35}
+.pdf-table-head{height:12mm;background:var(--blue);color:#fff;display:grid;grid-template-columns:43% 14.5% 16% 12% 14.5%;align-items:center;padding:0 8.5mm;font-weight:800;font-size:10.5pt}
+.pdf-table-head div:nth-child(n+2){text-align:center}
+.pdf-items{padding:5mm 7mm 0 7mm;max-height:85mm;overflow:hidden;}
+.pdf-item{display:grid;grid-template-columns:43% 14.5% 16% 12% 14.5%;padding:0 1.5mm;min-height:12mm;align-items:start;font-size:9.5pt}
+.pdf-item > div:not(:first-child){text-align:center}
+.pdf-desc{text-transform:uppercase;line-height:1.25}
+.pdf-right{margin-left:51.5%;width:48.5%;padding:1mm 8.5mm 0 0}
+.pdf-totals{font-size:10.5pt;font-weight:800;line-height:1.3}
+.pdf-totals .r{display:grid;grid-template-columns:1fr auto}
+.pdf-paybox{margin-top:3mm;background:linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(130, 130, 130, 1) 100%);color:#fff;padding:3mm 5mm;display:grid;grid-template-columns:1fr auto;align-items:center;font-weight:800;font-size:10pt}
+.pdf-words{margin-top:2.5mm;font-size:9pt;line-height:1.2}
+.pdf-words b{font-weight:900}
+.pdf-payments{position:absolute;left:10mm;bottom:36mm;width:84mm;font-size:9.5pt;line-height:1.35}
+.pdf-payments h3{font-size:10.5pt;margin:0 0 3mm}
+.pdf-payments .bank-title{font-weight:900;margin-bottom:1mm}
+.pdf-terms{position:absolute;left:15mm;right:15mm;bottom:18mm;text-align:center;font-size:8.5pt;line-height:1.35}
+.pdf-footer{position:absolute;left:0;right:0;bottom:0;height:10mm;border-top:0.5mm solid var(--blue);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:11.5pt;font-weight:900}
+
+.fab{
+  position:fixed;right:20px;bottom:90px;z-index:45;background:var(--ink);color:#fff;
+  padding:16px 20px;border-radius:100px;box-shadow:0 10px 25px rgba(0,0,0,.2);font-weight:600;
+  display:flex;align-items:center;gap:8px;font-size:15px;
+}
+.bottom-nav{
+  position:fixed;z-index:50;bottom:0;left:0;right:0;height:74px;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(0,0,0,.08);display:flex;padding-bottom:env(safe-area-inset-bottom)
+}
+.nav-btn{
+  flex:1;background:none;color:var(--muted);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600
+}
+.nav-btn .ico{font-size:22px;line-height:1}
+.nav-btn.active{color:var(--blue)}
+
+.pwa-banner{
+  background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+  color:#fff;padding:16px;border-radius:var(--radius);margin-bottom:16px;
+  display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,122,255,0.2);
+}
+.pwa-banner-content{display:flex;justify-content:space-between;align-items:center}
+.pwa-banner h4{margin:0 0 2px;font-size:16px;font-weight:700}
+.pwa-banner p{margin:0;font-size:13px;opacity:0.9}
+.pwa-install-btn{background:#fff;color:var(--blue);padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;white-space:nowrap}
+.ios-steps{font-size:12px;background:rgba(255,255,255,0.15);padding:10px;border-radius:8px;line-height:1.4}
+
+/* MODAL PERSONALIZADO (Sin usar alert ni confirm) */
+.custom-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+.custom-modal{
+  background:#fff;border-radius:16px;width:100%;max-width:380px;
+  padding:24px;box-shadow:0 10px 40px rgba(0,0,0,0.2);text-align:center;
+  animation:modalScale 0.25s ease;
+}
+@keyframes modalScale { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+.custom-modal h3{margin:0 0 10px;font-size:18px;font-weight:700;color:var(--ink)}
+.custom-modal p{margin:0 0 20px;font-size:14px;color:var(--muted);line-height:1.5}
+.custom-modal-actions{display:flex;gap:10px}
+.custom-modal-actions button{flex:1;padding:12px;border-radius:10px;font-weight:600;font-size:14px}
+.modal-btn-cancel{background:#e5e5ea;color:var(--ink)}
+.modal-btn-confirm{background:var(--blue);color:#fff}
+
+@media (min-width:768px){
+  body{padding-bottom:0;display:flex;}
+  .bottom-nav{
+    top:0; bottom:0; left:0; right:auto; width:260px; height:auto;
+    flex-direction:column; justify-content:flex-start; padding-top:80px;
+    border-top:none; border-right:1px solid rgba(0,0,0,.08);
+    background:rgba(244, 245, 247, 0.6); 
+  }
+  .nav-btn{
+    flex:none; flex-direction:row; justify-content:flex-start; gap:14px;
+    padding:12px 20px; margin:4px 16px; border-radius:10px; font-size:15px;
+  }
+  .nav-btn .ico{width:24px; text-align:center;}
+  .nav-btn.active{background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,.06); color:var(--blue);}
+  .app-header{left:260px; padding:0 32px;}
+  .install-top-btn{display:inline-block;}
+  main{margin:0; padding:100px 40px 60px 300px; max-width:1200px; flex:1;}
+  .grid{grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  .field.full{grid-column:1 / -1;}
+  .item-row{
+    background:transparent; border:none; border-bottom:1px solid var(--line);
+    border-radius:0; padding:8px 0; grid-template-columns:1fr 100px 140px 40px; margin-bottom:0;
+  }
+  .items-head{
+    display:grid; grid-template-columns:1fr 100px 140px 40px; gap:8px;
+    padding-bottom:8px; border-bottom:2px solid var(--line); margin-bottom:8px;
+  }
+  .items-head span{font-size:12px; color:var(--muted); font-weight:700; text-transform:uppercase}
+  .preview-shell{display:flex; justify-content:center;}
+  .pdf-frame{
+    padding:40px; background:#d1d1d6; border-radius:16px; 
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.05); max-height:none;
+  }
+  #pdf_template{transform-origin:top center;}
+  .fab{bottom:40px; right:40px; padding:18px 28px; font-size:16px;}
+}
+
+@media print{
+  body{background:#fff}
+  .app-header,.bottom-nav,.fab,main>.section-title,.preview-note,.pwa-banner{display:none!important}
+  main{padding:0;max-width:none}
+  .tab{display:block!important}
+  .pdf-frame{box-shadow:none;padding:0;overflow:visible;background:#fff}
+  #pdf_template{margin:0;box-shadow:none; page-break-after: avoid; break-after: avoid;}
+}
+</style>
+</head>
+
+<body>
+<header class="app-header">
+  <div class="brand"><img src="logo.png"style="height: 19px;"alt="" srcset=""><small>Generador de Documentos</small></div>
+  <div class="header-actions">
+    <button class="install-top-btn" id="installTopBtn" style="display:none;">Instalar App</button>
+    <button class="clear-btn" id="clearBtn">Nueva cotización</button>
+  </div>
+</header>
+
+<main>
+  <section id="editTab" class="tab active">
+    <div class="section-title">Edición</div>
+
+    <!-- PWA Install Banner Container -->
+    <div id="pwaBannerContainer"></div>
+
+    <div class="card">
+      <h3>Datos del documento</h3>
+      <div class="grid">
+        <div class="field"><label>Folio / Documento</label><input id="folio" placeholder="COT-2026-001"></div>
+        <div class="field"><label>Fecha</label><input id="date" type="date"></div>
+        <div class="field"><label>Tiempo de entrega</label><input id="delivery" placeholder="1 a 3 días hábiles"></div>
+        <div class="field"><label>Vigencia</label><input id="validity" placeholder="30 días"></div>
+        <div class="field full"><label>Mensaje del Pie</label><input id="footerMsg" placeholder="GRACIAS POR SU CONFIANZA"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Mi Empresa (Emisor)</h3>
+      <div class="grid">
+        <div class="field"><label>Nombre del Emisor</label><input id="companyName"></div>
+        <div class="field"><label>RFC Emisor</label><input id="companyRfc" placeholder="RFC del emisor"></div>
+        <div class="field"><label>Teléfono</label><input id="companyPhone"></div>
+        <div class="field"><label>Correo</label><input id="companyEmail"></div>
+        <div class="field"><label>C.P.</label><input id="companyCp" placeholder="91697"></div>
+        <div class="field"><label>Banco</label><input id="bank"></div>
+        <div class="field"><label>CLABE / Cuenta</label><input id="clabe"></div>
+        <div class="field full"><label>Dirección Física</label><textarea id="companyAddress" placeholder="Calle, Colonia, Ciudad, Estado"></textarea></div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="logo-wrap">
+        <div class="logo-preview" id="logoPreview">LOGO</div>
+        <label class="file-btn">Seleccionar imagen<input type="file" id="logoInput" accept="image/*"></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Datos del cliente</h3>
+      <div class="grid">
+        <div class="field full"><label>Empresa o Cliente</label><input id="clientName"></div>
+        <div class="field"><label>Atención a</label><input id="contact"></div>
+        <div class="field"><label>RFC Cliente</label><input id="clientRfc"></div>
+        <div class="field"><label>Teléfono</label><input id="clientPhone"></div>
+        <div class="field"><label>Correo</label><input id="clientEmail"></div>
+        <div class="field"><label>C.P.</label><input id="clientCp"></div>
+        <div class="field full"><label>Dirección de Envío/Facturación</label><textarea id="address"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Conceptos de Venta</h3>
+      <div class="items-head">
+        <span>Descripción del Servicio/Producto</span><span>Cant.</span><span>Precio Unit.</span><span></span>
+      </div>
+      <div id="items"></div>
+      <button class="add-btn" id="addItem">＋ Añadir concepto</button>
+    </div>
+
+    <div class="card">
+      <h3>Cierre y Totales</h3>
+      <div class="grid" style="margin-bottom:16px;">
+        <div class="field">
+          <label>Tasa IVA (%)</label>
+          <input id="taxRate" type="number" step="1" value="16">
+        </div>
+      </div>
+      <div class="summary">
+        <span>Subtotal</span><strong id="sumSubtotal">$0.00</strong>
+        <span>IVA</span><strong id="sumIva">$0.00</strong>
+        <span class="total">Total</span><strong class="total" id="sumTotal">$0.00</strong>
+      </div>
+      <button class="save-current" id="saveQuote">Guardar progreso</button>
+      <div class="save-state" id="saveState">Borrador en curso</div>
+    </div>
+  </section>
+
+  <section id="previewTab" class="tab">
+    <div class="section-title">Vista previa</div>
+    <div class="preview-note">El documento final usará este diseño en formato A4 exacto.</div>
+    <div class="preview-shell">
+      <div class="pdf-frame">
+        <div id="pdf_template">
+          <div class="pdf-top">
+            <h1>COTIZACIÓN</h1>
+            <div class="issuer">
+              Nombre: <span id="pTopName">EMPRESA</span><br>
+              Documento: <span id="pTopFolio">COT-2026-001</span><br>
+              Correo: <span id="pTopEmail">correo@empresa.com</span><br>
+              Teléfono: <span id="pTopPhone">+52 000 000 0000</span>
+            </div>
+            <div class="pdf-logo" id="pLogo"></div>
+            <div class="pdf-meta"></div>
+          </div>
+
+          <div class="pdf-client">
+            <div>
+              <div class="label">COTIZACION PARA:</div>
+              <div class="value" id="pClient">CLIENTE</div>
+              <div class="line" id="pContact">CONTACTO</div>
+              <div class="line" id="pClientRfc">—</div>
+              <div class="line" id="pAddress">—</div>
+              <div class="line" id="pClientPhone">—</div>
+              <div class="line" id="pClientEmail">—</div>
+            </div>
+            <div>
+              <div class="label">COTIZACION DE:</div>
+              <div class="value" id="pIssuerName">EMISOR</div>
+              <div class="client-address-wrap">
+                <div class="line" id="pIssuerRfc">—</div>
+                <div class="line" id="pIssuerAddress">—</div>
+                <div class="client-cp" id="pIssuerCp"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdf-table-head">
+            <div>DESCRIPCIÓN</div><div>CANTIDAD</div><div>P/UNITARIO</div><div>IVA</div><div>IMPORTE</div>
+          </div>
+
+          <div class="pdf-items" id="pItems"></div>
+
+          <div class="pdf-right">
+            <div class="pdf-totals">
+              <div class="r"><span>SUBTOTAL:</span><span id="pSubtotal">$0.00</span></div>
+              <div class="r"><span id="pIvaLabel">IVA:</span><span id="pIva">$0.00</span></div>
+              <div class="r"><span>TOTAL:</span><span id="pTotal">$0.00</span></div>
+            </div>
+            <div class="pdf-paybox"><span>TOTAL POR PAGAR:</span><span id="pPayable">$0.00</span></div>
+            <div class="pdf-words"><b>IMPORTE CON LETRA:</b>&nbsp; <span id="pWords">Cero pesos 00/100 M.N.</span></div>
+          </div>
+
+          <div class="pdf-payments">
+            <h3>MÉTODOS DE PAGOS</h3>
+            <div class="bank-title">TRANSFERENCIA</div>
+            <div>CLABE: &nbsp;<span id="pClabe">—</span></div>
+            <div>BANCO: &nbsp;<span id="pBank">—</span></div>
+          </div>
+
+          <div class="pdf-terms">
+            Esta cotización tiene una validez de <span id="pTermsValidity">—</span>.
+            Después de este tiempo deberá solicitar una nueva cotización y estará sujeta a variación de precios.
+            <br>Tiempo de entrega: <span id="pDelivery">—</span>.
+          </div>
+
+          <div class="pdf-footer" id="pFooter">GRACIAS POR SU CONFIANZA</div>
+        </div>
+      </div>
+    </div>
+    <button class="fab" id="downloadPdf">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      Exportar PDF
+    </button>
+  </section>
+
+  <section id="historyTab" class="tab">
+    <div class="section-title">Historial de cotizaciones</div>
+    <div class="card">
+      <div class="history-toolbar" style="display:flex;gap:10px;margin-bottom:16px">
+        <button class="primary-btn" id="newQuote" style="flex:1;border-radius:10px;padding:14px;font-weight:600;font-size:14px;background:var(--blue);color:#fff">Crear nueva</button>
+        <button class="secondary-btn" id="saveQuoteTop" style="flex:1;border-radius:10px;padding:14px;font-weight:600;font-size:14px;background:#e5e5ea;color:var(--ink)">Guardar actual</button>
+      </div>
+      <div class="small-note">Los datos se almacenan localmente en tu navegador.</div>
+    </div>
+    <div id="historyList"></div>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-tab="editTab"><span class="ico">✎</span><span>Editor</span></button>
+  <button class="nav-btn" data-tab="previewTab"><span class="ico">▣</span><span>Vista Previa</span></button>
+  <button class="nav-btn" data-tab="historyTab"><span class="ico">◷</span><span>Historial</span></button>
+</nav>
+
+<!-- Custom Modal Dialog (Replaces alert/confirm) -->
+<div class="custom-modal-overlay" id="customModalOverlay">
+  <div class="custom-modal">
+    <h3 id="modalTitle">Atención</h3>
+    <p id="modalMessage">¿Estás seguro?</p>
+    <div class="custom-modal-actions" id="modalActions">
+      <button class="modal-btn-cancel" id="modalCancelBtn">Cancelar</button>
+      <button class="modal-btn-confirm" id="modalConfirmBtn">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Registro de Service Worker para PWA Offline
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => {
+      e.waitUntil(self.skipWaiting());
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(self.clients.claim());
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match(e.request)))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'text/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
+}
+
+// Gestión de instalación PWA (Android / iOS / Escritorio)
+let deferredPrompt = null;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+function initPwaInstall() {
+  if (isStandalone) return; // Ya está instalada
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    renderInstallBanner('android');
+  });
+
+  if (isIOS) {
+    renderInstallBanner('ios');
+  }
+}
+
+function renderInstallBanner(type) {
+  const $container = $('#pwaBannerContainer');
+  $('#installTopBtn').show();
+
+  if (type === 'android') {
+    $container.html(`
+      <div class="pwa-banner">
+        <div class="pwa-banner-content">
+          <div>
+            <h4>Instalar Valtren</h4>
+            <p>Accede rápidamente y úsala sin conexión a internet.</p>
+          </div>
+          <button class="pwa-install-btn" id="pwaTriggerBtn">Instalar</button>
+        </div>
+      </div>
+    `);
+  } else if (type === 'ios') {
+    $container.html(`
+      <div class="pwa-banner">
+        <div>
+          <h4>Instalar en tu iPhone o iPad</h4>
+          <p>Disfruta de la experiencia de aplicación nativa:</p>
+        </div>
+        <div class="ios-steps">
+          1. Toca el botón <b>Compartir</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> en tu barra de Safari.<br>
+          2. Selecciona <b>"Agregar a Inicio"</b> ⊕ en el menú desplegable.
+        </div>
+      </div>
+    `);
+  }
+}
+
+$(document).on('click', '#pwaTriggerBtn, #installTopBtn', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      $('#pwaBannerContainer').empty();
+      $('#installTopBtn').hide();
+    }
+    deferredPrompt = null;
+  } else if (isIOS) {
+    showCustomModal('Instalación en iOS', 'Para instalar en iOS, toca el botón Compartir en Safari y selecciona "Agregar a Inicio".', false, null);
+  } else {
+    showCustomModal('Instalación PWA', 'Esta aplicación ya se puede instalar desde el menú de opciones de tu navegador (Añadir a la pantalla de inicio o Instalar aplicación).', false, null);
+  }
+});
+
+// Reemplazo estricto de alert() y confirm() por Modal Personalizado
+function showCustomModal(title, message, showCancel = true, onConfirm = null) {
+  $('#modalTitle').text(title);
+  $('#modalMessage').text(message);
+  const $cancelBtn = $('#modalCancelBtn');
+  const $confirmBtn = $('#modalConfirmBtn');
+  
+  if (!showCancel) {
+    $cancelBtn.hide();
+    $confirmBtn.text('Aceptar');
+  } else {
+    $cancelBtn.show();
+    $cancelBtn.text('Cancelar');
+    $confirmBtn.text('Aceptar');
+  }
+
+  $('#customModalOverlay').css('display', 'flex');
+
+  // Limpiar eventos anteriores
+  $confirmBtn.off('click').on('click', () => {
+    $('#customModalOverlay').hide();
+    if (typeof onConfirm === 'function') onConfirm(true);
+  });
+
+  $cancelBtn.off('click').on('click', () => {
+    $('#customModalOverlay').hide();
+    if (typeof onConfirm === 'function') onConfirm(false);
+  });
+}
+
+// Lógica principal de cotizaciones
+$(function(){
+  initPwaInstall();
+
+  const KEY = 'cotizador_a4_v2_current';
+  const HISTORY_KEY = 'cotizador_a4_v2_history';
+
+  const defaults = {
+    id:'', folio:'', date:new Date().toISOString().slice(0,10),
+    delivery:'1 a 3 días hábiles', validity:'30 días', footerMsg:'GRACIAS POR SU CONFIANZA',
+    companyName:'MARIELA MORALES LAGUNES', companyRfc:'MOLM860219FC8', companyPhone:'+52 288 885 6427',
+    companyEmail:'', companyCp:'91697', companyAddress:'Palma Fiji 321- 2D\nFracc. Paseo De Las Palmas\nVeracruz, Ver',
+    bank:'AZTECA', clabe:'127905013336447658', logo:'',
+    clientName:'', contact:'', clientRfc:'', clientPhone:'', clientEmail:'', clientCp:'', address:'',
+    taxRate:16,
+    items:[{desc:'',qty:1,price:0}]
+  };
+
+  function makeId(){ return 'cot_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+
+  function loadHistory(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(HISTORY_KEY));
+      return Array.isArray(saved) ? saved : [];
+    }catch(e){ return []; }
+  }
+
+  function nextFolio(){
+    const history=loadHistory();
+    let max=0;
+    history.forEach(q=>{
+      const m=String(q.folio||'').match(/(\d+)$/);
+      if(m) max=Math.max(max,Number(m[1]));
+    });
+    return `CT-${String(max+1).padStart(4,'0')}`;
+  }
+
+  function freshQuote(){ return $.extend(true,{},defaults,{id:makeId(),folio:nextFolio()}); }
+
+  function loadCurrent(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(KEY));
+      if(saved) return $.extend(true,{},defaults,saved);
+    }catch(e){}
+    return freshQuote();
+  }
+
+  let data=loadCurrent();
+
+  function saveCurrent(){
+    localStorage.setItem(KEY,JSON.stringify(data));
+    $('#saveState').text('Borrador guardado · '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}));
+  }
+
+  function saveQuoteToHistory(){
+    syncForm(false);
+    if(!data.id) data.id=makeId();
+    const history=loadHistory(), copy=$.extend(true,{},data);
+    copy.updatedAt=new Date().toISOString();
+    const index=history.findIndex(q=>q.id===copy.id);
+    if(index>=0) history[index]=copy; else history.unshift(copy);
+    localStorage.setItem(HISTORY_KEY,JSON.stringify(history));
+    localStorage.setItem(KEY,JSON.stringify(data));
+    $('#saveState').text('Cotización guardada · '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}));
+    renderHistory();
+  }
+
+  function money(n){
+    return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:2}).format(Number(n)||0);
+  }
+
+  function esc(v){
+    return $('<div>').text(v == null ? '' : String(v)).html();
+  }
+
+  function renderForm(){
+    $('#folio').val(data.folio); $('#date').val(data.date);
+    $('#delivery').val(data.delivery); $('#validity').val(data.validity);
+    $('#footerMsg').val(data.footerMsg);
+    
+    $('#companyName').val(data.companyName); $('#companyRfc').val(data.companyRfc);
+    $('#companyPhone').val(data.companyPhone); $('#companyEmail').val(data.companyEmail);
+    $('#companyCp').val(data.companyCp); $('#companyAddress').val(data.companyAddress);
+    $('#bank').val(data.bank); $('#clabe').val(data.clabe);
+    
+    $('#clientName').val(data.clientName); $('#contact').val(data.contact);
+    $('#clientRfc').val(data.clientRfc); $('#clientPhone').val(data.clientPhone);
+    $('#clientEmail').val(data.clientEmail); $('#clientCp').val(data.clientCp);
+    $('#address').val(data.address);
+    
+    $('#taxRate').val(data.taxRate !== undefined ? data.taxRate : 16);
+
+    $('#items').empty();
+    data.items.forEach((it,i)=>{
+      $('#items').append(`
+        <div class="item-row" data-index="${i}">
+          <input class="it-desc" placeholder="Servicio / producto" value="${esc(it.desc)}">
+          <input class="it-qty" type="number" min="0" step="1" value="${Number(it.qty)||0}">
+          <input class="it-price" type="number" min="0" step="0.01" value="${Number(it.price)||0}">
+          <button class="del" title="Eliminar">×</button>
+        </div>
+      `);
+    });
+    showLogo();
+  }
+
+  function showLogo(){
+    const src=data.logo;
+    $('#logoPreview').html(src ? `<img src="${src}" alt="Logo">` : 'LOGO');
+  }
+
+  function syncForm(autoSave=true){
+    data.folio=$('#folio').val();
+    data.date=$('#date').val();
+    data.delivery=$('#delivery').val();
+    data.validity=$('#validity').val();
+    data.footerMsg=$('#footerMsg').val();
+    
+    data.companyName=$('#companyName').val();
+    data.companyRfc=$('#companyRfc').val();
+    data.companyPhone=$('#companyPhone').val();
+    data.companyEmail=$('#companyEmail').val();
+    data.companyCp=$('#companyCp').val();
+    data.companyAddress=$('#companyAddress').val();
+    data.bank=$('#bank').val();
+    data.clabe=$('#clabe').val();
+
+    data.clientName=$('#clientName').val();
+    data.contact=$('#contact').val();
+    data.clientRfc=$('#clientRfc').val();
+    data.clientPhone=$('#clientPhone').val();
+    data.clientEmail=$('#clientEmail').val();
+    data.clientCp=$('#clientCp').val();
+    data.address=$('#address').val();
+    
+    data.taxRate=Number($('#taxRate').val())||0;
+
+    data.items=[];
+    $('#items .item-row').each(function(){
+      data.items.push({
+        desc:$(this).find('.it-desc').val(),
+        qty:Number($(this).find('.it-qty').val())||0,
+        price:Number($(this).find('.it-price').val())||0
+      });
+    });
+    calculate();
+    if(autoSave) saveCurrent();
+  }
+
+  function calculate(){
+    const subtotal=data.items.reduce((s,it)=>s+(it.qty*it.price),0);
+    const rate=(Number(data.taxRate)||0)/100;
+    const iva=subtotal*rate;
+    const total=subtotal+iva;
+    $('#sumSubtotal').text(money(subtotal));
+    $('#sumIva').text(money(iva));
+    $('#sumTotal').text(money(total));
+    renderPdf(subtotal,iva,total);
+  }
+
+  function renderPdf(subtotal,iva,total){
+    $('#pTopName').text(data.companyName || 'EMPRESA');
+    $('#pTopFolio').text(data.folio || '—');
+    $('#pTopEmail').text(data.companyEmail || '—');
+    $('#pTopPhone').text(data.companyPhone || '—');
+
+    $('#pClient').text(data.clientName || 'CLIENTE');
+    $('#pContact').text(data.contact ? "Atención: " + data.contact : '');
+    $('#pClientRfc').text(data.clientRfc ? 'RFC: ' + data.clientRfc : '');
+    $('#pAddress').text(data.address || '');
+    if(data.clientCp) $('#pAddress').append(data.address ? ' C.P. ' + data.clientCp : 'C.P. ' + data.clientCp);
+    $('#pClientPhone').text(data.clientPhone || '');
+    $('#pClientEmail').text(data.clientEmail || '');
+
+    $('#pIssuerName').text(data.companyName || 'EMISOR');
+    $('#pIssuerRfc').text(data.companyRfc || '');
+    $('#pIssuerAddress').text(data.companyAddress || '');
+    $('#pIssuerCp').text(data.companyCp ? 'CP: ' + data.companyCp : '');
+
+    $('#pDelivery').text(data.delivery || '—');
+    $('#pTermsValidity').text(data.validity || '—');
+    $('#pFooter').text(data.footerMsg || 'GRACIAS POR SU CONFIANZA');
+
+    $('#pSubtotal').text(money(subtotal));
+    $('#pIvaLabel').text(`IVA (${data.taxRate || 0}%):`);
+    $('#pIva').text(money(iva));
+    $('#pTotal').text(money(total));
+    $('#pPayable').text(money(total));
+    $('#pWords').text(amountToWords(total));
+
+    $('#pClabe').text(data.clabe || '—');
+    $('#pBank').text(data.bank || '—');
+
+    if(data.logo) $('#pLogo').html(`<img src="${data.logo}" alt="Logo">`);
+    else $('#pLogo').empty();
+
+    const $list=$('#pItems').empty();
+    data.items.forEach(it=>{
+      if(!it.desc && !it.qty && !it.price) return;
+      const importe=it.qty*it.price;
+      $list.append(`
+        <div class="pdf-item">
+          <div class="pdf-desc">${esc(it.desc || 'CONCEPTO').replace(/\n/g, '<br>')}</div>
+          <div>${it.qty}</div>
+          <div>${money(it.price)}</div>
+          <div>${data.taxRate || 0}%</div>
+          <div>${money(importe)}</div>
+        </div>
+      `);
+    });
+  }
+
+  const units=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticinco','veintisiete','veintiocho','veintinueve'];
+  const tens=['','','veinte','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+  const hundreds=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+
+  function under100(n){
+    if(n<30) return units[n] || String(n);
+    if(n%10===0) return tens[Math.floor(n/10)];
+    return tens[Math.floor(n/10)]+' y '+units[n%10];
+  }
+  function under1000(n){
+    if(n<100) return under100(n);
+    if(n===100) return 'cien';
+    return hundreds[Math.floor(n/100)] + (n%100 ? ' '+under100(n%100) : '');
+  }
+  function integerWords(n){
+    n=Math.floor(n);
+    if(n===0) return 'cero';
+    if(n<1000) return under1000(n);
+    if(n<1000000){
+      const th=Math.floor(n/1000), rem=n%1000;
+      const left=th===1?'mil':integerWords(th)+' mil';
+      return left+(rem?' '+under1000(rem):'');
+    }
+    if(n<1000000000){
+      const m=Math.floor(n/1000000), rem=n%1000000;
+      const left=m===1?'un millón':integerWords(m)+' millones';
+      return left+(rem?' '+integerWords(rem):'');
+    }
+    return String(n);
+  }
+  function amountToWords(amount){
+    amount=Math.max(0,Number(amount)||0);
+    const pesos=Math.floor(amount+1e-9);
+    const cents=Math.round((amount-pesos)*100);
+    let s=integerWords(pesos);
+    s=s.charAt(0).toUpperCase()+s.slice(1);
+    return `${s} pesos ${String(cents).padStart(2,'0')}/100 M.N.`;
+  }
+
+  renderForm(); calculate(); renderHistory();
+
+  $(document).on('input change','#editTab input:not(#logoInput), #editTab textarea, #editTab select',function(){
+    syncForm(true);
+  });
+
+  $('#addItem').on('click',function(){
+    data.items.push({desc:'',qty:1,price:0});
+    renderForm(); calculate(); saveCurrent();
+    const rows=$('#items .item-row');
+    rows.last().find('.it-desc').focus();
+  });
+
+  $(document).on('click','.del',function(){
+    const i=Number($(this).closest('.item-row').data('index'));
+    data.items.splice(i,1);
+    if(!data.items.length) data.items.push({desc:'',qty:1,price:0});
+    renderForm(); calculate(); saveCurrent();
+  });
+
+  $('#logoInput').on('change',function(e){
+    const file=e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{data.logo=reader.result;showLogo();saveCurrent();calculate();};
+    reader.readAsDataURL(file);
+  });
+
+  $('.nav-btn').on('click',function(){
+    const tab=$(this).data('tab');
+    $('.tab').removeClass('active');
+    $('#'+tab).addClass('active');
+    $('.nav-btn').removeClass('active');
+    $(this).addClass('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  $('#clearBtn, #newQuote').on('click',function(){
+    showCustomModal('Nueva cotización', '¿Crear una cotización nueva? El progreso actual se perderá si no lo has guardado en el historial.', true, (confirmed)=>{
+      if(!confirmed) return;
+      const companySnapshot={
+        companyName:data.companyName, companyRfc:data.companyRfc, companyPhone:data.companyPhone,
+        companyEmail:data.companyEmail, companyCp:data.companyCp, companyAddress:data.companyAddress,
+        bank:data.bank, clabe:data.clabe, logo:data.logo
+      };
+      data=$.extend(true,{},freshQuote(),companySnapshot);
+      renderForm(); calculate(); saveCurrent();
+      $('.nav-btn[data-tab="editTab"]').trigger('click');
+    });
+  });
+
+  function renderHistory(){
+    const history=loadHistory().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
+    const $list=$('#historyList').empty();
+    if(!history.length){
+      $list.html('<div class="history-empty">Aún no hay cotizaciones guardadas.</div>');
+      return;
+    }
+    history.forEach(q=>{
+      const subtotal=(q.items||[]).reduce((s,it)=>s+(Number(it.qty)||0)*(Number(it.price)||0),0);
+      const rate=(Number(q.taxRate)||0)/100;
+      const total=subtotal*(1+rate);
+      const date=q.date ? new Date(q.date+'T00:00:00').toLocaleDateString('es-MX') : 'Sin fecha';
+      $list.append(`
+        <div class="history-item" style="background:var(--card);border:1px solid rgba(0,0,0,.05);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,.03)">
+          <div class="history-item-top" style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+            <div><div class="history-folio" style="font-weight:700;font-size:16px;color:var(--ink)">${esc(q.folio||'Sin folio')}</div>
+            <div class="history-client" style="font-size:14px;color:var(--muted);margin-top:4px">${esc(q.clientName||'Cliente sin nombre')}</div></div>
+            <div class="history-total" style="font-weight:700;font-size:17px;white-space:nowrap;color:var(--blue)">${money(total)}</div>
+          </div>
+          <div class="history-meta" style="font-size:12px;color:var(--muted);margin-top:10px">Creada: ${esc(date)}</div>
+          <div class="history-actions" style="display:flex;gap:8px;margin-top:14px">
+            <button class="load-history" data-id="${esc(q.id)}" style="flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:#f5f5f7;color:var(--ink)">Abrir y editar</button>
+            <button class="delete-history" data-id="${esc(q.id)}" style="flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(255,59,48,0.1);color:var(--danger)">Eliminar</button>
+          </div>
+        </div>`);
+    });
+  }
+
+  $('#saveQuote,#saveQuoteTop').on('click',function(){ saveQuoteToHistory(); });
+
+  $(document).on('click','.load-history',function(){
+    const found=loadHistory().find(q=>q.id===$(this).data('id'));
+    if(!found) return;
+    data=$.extend(true,{},defaults,found);
+    localStorage.setItem(KEY,JSON.stringify(data));
+    renderForm(); calculate();
+    $('.nav-btn[data-tab="editTab"]').trigger('click');
+    $('#saveState').text('Cotización cargada de tu historial');
+  });
+
+  $(document).on('click','.delete-history',function(){
+    const id=$(this).data('id'), found=loadHistory().find(q=>q.id==id);
+    if(!found) return;
+    showCustomModal('Eliminar cotización', `¿Eliminar la cotización ${found.folio||''} del historial?`, true, (confirmed)=>{
+      if(!confirmed) return;
+      localStorage.setItem(HISTORY_KEY,JSON.stringify(loadHistory().filter(q=>q.id!==id)));
+      renderHistory();
+    });
+  });
+
+  $('#downloadPdf').on('click',async function(){
+    syncForm();
+    const folio=(data.folio||'COTIZACION').replace(/[\\/:*?"<>|]+/g,'-').trim();
+    const client=(data.clientName||'Cliente').replace(/[\\/:*?"<>|]+/g,'-').trim();
+    const filename=`${folio}_${client}.pdf`;
+
+    const element=document.getElementById('pdf_template');
+    const opt={
+      margin: 0, 
+      filename: filename, 
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    };
+
+    const btn=$(this);
+    btn.prop('disabled',true).html('Generando PDF...');
+    try{
+      await html2pdf().set(opt).from(element).save();
+    }catch(err){
+      console.error(err);
+      showCustomModal('Error', 'No se pudo generar el PDF.', false, null);
+    }finally{
+      btn.prop('disabled',false).html('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Exportar PDF');
+    }
+  });
+});
+</script>
+</body>
+</html>
