@@ -1178,25 +1178,38 @@ document.addEventListener("DOMContentLoaded", function() {
   const frame = document.querySelector('.pdf-frame');
   
   let scale = 1;
+  let posX = 0;
+  let posY = 0;
+  
   let startDist = 0;
+  let startPanX = 0;
+  let startPanY = 0;
   let isScaling = false;
+  let isPanning = false;
 
-  // Ajuste inicial para móviles
+  // Ajuste inicial para que la hoja entre completa a lo ancho en celulares
   function fitToScreen() {
     if (window.innerWidth < 768) {
       const frameWidth = frame.clientWidth - 24; 
       const a4PixelWidth = 794; 
       scale = frameWidth / a4PixelWidth;
-      template.style.transform = `scale(${scale})`;
-      template.style.transformOrigin = 'top left';
+      posX = 0;
+      posY = 0;
+      updateTransform();
       
       const a4PixelHeight = 1123; 
       frame.style.height = (a4PixelHeight * scale) + 24 + 'px';
     } else {
       scale = 1;
-      template.style.transform = 'scale(1)';
+      posX = 0;
+      posY = 0;
+      updateTransform();
       frame.style.height = 'auto';
     }
+  }
+
+  function updateTransform() {
+    template.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   }
 
   $('.nav-btn[data-tab="previewTab"]').on('click', function() {
@@ -1205,7 +1218,7 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener('resize', fitToScreen);
   fitToScreen();
 
-  // Distancia y punto medio entre dos dedos para el zoom
+  // Funciones de cálculo táctil
   function getDistance(touches) {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -1213,37 +1226,71 @@ document.addEventListener("DOMContentLoaded", function() {
     );
   }
 
+  function getMidpoint(touches) {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2
+    };
+  }
+
   frame.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
       isScaling = true;
+      isPanning = false;
       startDist = getDistance(e.touches);
-    } else {
+    } else if (e.touches.length === 1) {
+      isPanning = true;
       isScaling = false;
+      startPanX = e.touches[0].clientX - posX;
+      startPanY = e.touches[0].clientY - posY;
     }
   }, { passive: true });
 
   frame.addEventListener('touchmove', function(e) {
     if (isScaling && e.touches.length === 2) {
-      // --- ZOOM CON DOS DEDOS ---
+      // --- ZOOM ANCLADO EXACTAMENTE DONDE ESTÁN LOS DEDOS ---
       e.preventDefault();
       const currentDist = getDistance(e.touches);
-      const factor = currentDist / startDist;
+      if (startDist === 0) return;
       
+      const factor = currentDist / startDist;
       let newScale = scale * factor;
-      // Permite hacer zoom desde un tamaño pequeño hasta 4x
-      const minScale = window.innerWidth < 768 ? ((frame.clientWidth - 24) / 794) * 0.8 : 0.5;
+      
+      // Límites de zoom (desde más chico hasta 4x de acercamiento)
+      const minScale = window.innerWidth < 768 ? ((frame.clientWidth - 24) / 794) * 0.5 : 0.5;
       newScale = Math.max(minScale, Math.min(newScale, 4.0));
 
+      const mid = getMidpoint(e.touches);
+      
+      // Fórmula matemática para fijar el punto exacto bajo los dedos durante el zoom
+      posX = mid.x - (newScale / scale) * (mid.x - posX);
+      posY = mid.y - (newScale / scale) * (mid.y - posY);
       scale = newScale;
-      template.style.transform = `scale(${scale})`;
+      
       startDist = currentDist;
+      updateTransform();
+      
+    } else if (isPanning && e.touches.length === 1) {
+      // --- SCROLL / PANEO LIBRE CON UN DEDO (Izquierda, derecha, arriba, abajo y diagonales) ---
+      e.preventDefault();
+      posX = e.touches[0].clientX - startPanX;
+      posY = e.touches[0].clientY - startPanY;
+      updateTransform();
     }
-    // Si es 1 solo dedo, el navegador hace su scroll nativo fluido en cualquier dirección libremente (izq, der, arriba, abajo, diagonales)
   }, { passive: false });
 
   frame.addEventListener('touchend', function(e) {
     if (e.touches.length < 2) {
       isScaling = false;
+    }
+    if (e.touches.length === 0) {
+      isPanning = false;
+    }
+    // Si levantas un dedo pero dejas el otro, permite seguir moviendo la hoja fluidamente
+    if (e.touches.length === 1) {
+      isPanning = true;
+      startPanX = e.touches[0].clientX - posX;
+      startPanY = e.touches[0].clientY - posY;
     }
   });
 });
