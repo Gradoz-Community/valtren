@@ -1164,5 +1164,56 @@ $(function(){
   });
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const frame = document.querySelector('.pdf-frame');
+  const template = document.getElementById('pdf_template');
+  
+  let scale = 1;
+  let startDist = 0;
+  let isScaling = false;
+
+  // Función para obtener la distancia entre dos puntos táctiles
+  function getDistance(touches) {
+    return Math.hypot(
+      touches[0].clientX - touches[1].clientX,
+      touches[0].clientY - touches[1].clientY
+    );
+  }
+
+  frame.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+      isScaling = true;
+      startDist = getDistance(e.touches);
+    }
+  }, { passive: true });
+
+  frame.addEventListener('touchmove', function(e) {
+    if (!isScaling || e.touches.length !== 2) return;
+    
+    e.preventDefault(); // Evita el zoom de la página entera del navegador
+    const currentDist = getDistance(e.touches);
+    const factor = currentDist / startDist;
+    
+    // Limitar el zoom mínimo (1x) y máximo (2.5x)
+    let newScale = scale * factor;
+    newScale = Math.max(0.8, Math.min(newScale, 2.5));
+    
+    template.style.transform = `scale(${newScale})`;
+  }, { passive: false });
+
+  frame.addEventListener('touchend', function(e) {
+    if (e.touches.length < 2 && isScaling) {
+      isScaling = false;
+      // Guardamos la escala actual aproximada tomando el transform actual si se desea
+      const matrix = window.getComputedStyle(template).transform;
+      if (matrix !== 'none') {
+        const values = matrix.split('(')[1].split(')')[0].split(',');
+        scale = parseFloat(values[0]); // Extrae la escala actual de la matriz CSS
+      }
+    }
+  });
+});
+</script>
 </body>
 </html>
