@@ -1178,38 +1178,25 @@ document.addEventListener("DOMContentLoaded", function() {
   const frame = document.querySelector('.pdf-frame');
   
   let scale = 1;
-  let posX = 0;
-  let posY = 0;
-  
   let startDist = 0;
   let isScaling = false;
 
-  let isPanning = false;
-  let startPanX = 0;
-  let startPanY = 0;
-
+  // Ajuste inicial para móviles
   function fitToScreen() {
     if (window.innerWidth < 768) {
       const frameWidth = frame.clientWidth - 24; 
       const a4PixelWidth = 794; 
       scale = frameWidth / a4PixelWidth;
-      posX = 0;
-      posY = 0;
-      updateTransform();
+      template.style.transform = `scale(${scale})`;
+      template.style.transformOrigin = 'top left';
       
       const a4PixelHeight = 1123; 
       frame.style.height = (a4PixelHeight * scale) + 24 + 'px';
     } else {
       scale = 1;
-      posX = 0;
-      posY = 0;
-      updateTransform();
+      template.style.transform = 'scale(1)';
       frame.style.height = 'auto';
     }
-  }
-
-  function updateTransform() {
-    template.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   }
 
   $('.nav-btn[data-tab="previewTab"]').on('click', function() {
@@ -1218,6 +1205,7 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener('resize', fitToScreen);
   fitToScreen();
 
+  // Distancia y punto medio entre dos dedos para el zoom
   function getDistance(touches) {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -1225,59 +1213,37 @@ document.addEventListener("DOMContentLoaded", function() {
     );
   }
 
-  function getMidpoint(touches) {
-    return {
-      x: (touches[0].clientX + touches[1].clientX) / 2,
-      y: (touches[0].clientY + touches[1].clientY) / 2
-    };
-  }
-
   frame.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
       isScaling = true;
-      isPanning = false;
       startDist = getDistance(e.touches);
-    } else if (e.touches.length === 1 && scale > 1) {
-      isPanning = true;
+    } else {
       isScaling = false;
-      startPanX = e.touches[0].clientX - posX;
-      startPanY = e.touches[0].clientY - posY;
     }
   }, { passive: true });
 
   frame.addEventListener('touchmove', function(e) {
     if (isScaling && e.touches.length === 2) {
+      // --- ZOOM CON DOS DEDOS ---
       e.preventDefault();
       const currentDist = getDistance(e.touches);
       const factor = currentDist / startDist;
       
       let newScale = scale * factor;
-      const minScale = window.innerWidth < 768 ? (frame.clientWidth - 24) / 794 : 0.8;
-      newScale = Math.max(minScale, Math.min(newScale, 3.5)); 
+      // Permite hacer zoom desde un tamaño pequeño hasta 4x
+      const minScale = window.innerWidth < 768 ? ((frame.clientWidth - 24) / 794) * 0.8 : 0.5;
+      newScale = Math.max(minScale, Math.min(newScale, 4.0));
 
-      const mid = getMidpoint(e.touches);
-
-      posX = mid.x - (newScale / scale) * (mid.x - posX);
-      posY = mid.y - (newScale / scale) * (mid.y - posY);
       scale = newScale;
-      
+      template.style.transform = `scale(${scale})`;
       startDist = currentDist;
-      updateTransform();
-      
-    } else if (isPanning && e.touches.length === 1) {
-      e.preventDefault();
-      posX = e.touches[0].clientX - startPanX;
-      posY = e.touches[0].clientY - startPanY;
-      updateTransform();
     }
+    // Si es 1 solo dedo, el navegador hace su scroll nativo fluido en cualquier dirección libremente (izq, der, arriba, abajo, diagonales)
   }, { passive: false });
 
   frame.addEventListener('touchend', function(e) {
     if (e.touches.length < 2) {
       isScaling = false;
-    }
-    if (e.touches.length === 0) {
-      isPanning = false;
     }
   });
 });
