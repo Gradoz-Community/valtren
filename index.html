@@ -1182,11 +1182,12 @@ document.addEventListener("DOMContentLoaded", function() {
   let posY = 0;
   
   let startDist = 0;
-  let startX = 0;
-  let startY = 0;
   let isScaling = false;
 
-  // Ajuste inicial para móviles
+  let isPanning = false;
+  let startPanX = 0;
+  let startPanY = 0;
+
   function fitToScreen() {
     if (window.innerWidth < 768) {
       const frameWidth = frame.clientWidth - 24; 
@@ -1217,7 +1218,6 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener('resize', fitToScreen);
   fitToScreen();
 
-  // Distancia entre dos dedos
   function getDistance(touches) {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -1225,7 +1225,6 @@ document.addEventListener("DOMContentLoaded", function() {
     );
   }
 
-  // Punto medio entre los dos dedos
   function getMidpoint(touches) {
     return {
       x: (touches[0].clientX + touches[1].clientX) / 2,
@@ -1236,44 +1235,49 @@ document.addEventListener("DOMContentLoaded", function() {
   frame.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
       isScaling = true;
+      isPanning = false;
       startDist = getDistance(e.touches);
-      
-      const mid = getMidpoint(e.touches);
-      startX = mid.x;
-      startY = mid.y;
+    } else if (e.touches.length === 1 && scale > 1) {
+      isPanning = true;
+      isScaling = false;
+      startPanX = e.touches[0].clientX - posX;
+      startPanY = e.touches[0].clientY - posY;
     }
   }, { passive: true });
 
   frame.addEventListener('touchmove', function(e) {
-    if (!isScaling || e.touches.length !== 2) return;
-    
-    e.preventDefault();
-    
-    const currentDist = getDistance(e.touches);
-    const factor = currentDist / startDist;
-    
-    let newScale = scale * factor;
-    const minScale = window.innerWidth < 768 ? (frame.clientWidth - 24) / 794 : 0.8;
-    newScale = Math.max(minScale, Math.min(newScale, 3.5)); // Límite de 3.5x de zoom
+    if (isScaling && e.touches.length === 2) {
+      e.preventDefault();
+      const currentDist = getDistance(e.touches);
+      const factor = currentDist / startDist;
+      
+      let newScale = scale * factor;
+      const minScale = window.innerWidth < 768 ? (frame.clientWidth - 24) / 794 : 0.8;
+      newScale = Math.max(minScale, Math.min(newScale, 3.5)); 
 
-    const mid = getMidpoint(e.touches);
-    
-    // Ajustar la posición (translate) para que el punto bajo los dedos no se mueva
-    const scaleChange = newScale / scale;
-    posX = mid.x - scaleChange * (mid.x - posX);
-    posY = mid.y - scaleChange * (mid.y - posY);
-    scale = newScale;
-    
-    startDist = currentDist;
-    startX = mid.x;
-    startY = mid.y;
+      const mid = getMidpoint(e.touches);
 
-    updateTransform();
+      posX = mid.x - (newScale / scale) * (mid.x - posX);
+      posY = mid.y - (newScale / scale) * (mid.y - posY);
+      scale = newScale;
+      
+      startDist = currentDist;
+      updateTransform();
+      
+    } else if (isPanning && e.touches.length === 1) {
+      e.preventDefault();
+      posX = e.touches[0].clientX - startPanX;
+      posY = e.touches[0].clientY - startPanY;
+      updateTransform();
+    }
   }, { passive: false });
 
   frame.addEventListener('touchend', function(e) {
     if (e.touches.length < 2) {
       isScaling = false;
+    }
+    if (e.touches.length === 0) {
+      isPanning = false;
     }
   });
 });
