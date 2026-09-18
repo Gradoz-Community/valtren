@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#4698c6">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes">
+<meta name="theme-color" content="#0a0a0c" id="metaThemeColor">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Valtren">
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 24 24' fill='%234698c6'><path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/></svg>">
-<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Valtren%20Sistema%20de%20Cotizaciones%22%2C%22short_name%22%3A%22Valtren%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f5f7%22%2C%22theme_color%22%3A%22%234698c6%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2FSVG%2BXML%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27192%27%20height%3D%27192%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27%234698c6%27%3E%3Cpath%20d%3D%27M19%203H5c-1.1%200-2%20.9-2%202v14c0%201.1.9%202%202%202h14c1.1%200%202-.9%202-2V5c0-1.1-.9-2-2-2zm-5%2014H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2FSVG%2BXML%22%7D%5D%7D">
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Valtren%20Sistema%20de%20Cotizaciones%22%2C%22short_name%22%3A%22Valtren%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230a0a0c%22%2C%22theme_color%22%3A%22%230a0a0c%22%7D">
 <title>valtren · Sistema de Cotizaciones</title>
 <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -20,236 +20,343 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<!-- Google Icons (Material Symbols Rounded) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
-:root{
+/* TEMA OSCURO (Por defecto) */
+:root[data-theme="dark"]{
   --blue:#4698c6;
-  --blue-dark:#0056b3;
+  --blue-dark:#2b759f;
+  --ink:#f5f5f7;
+  --muted:#98989f;
+  --line:#2c2c30;
+  --card:#161619;
+  --bg:#0a0a0c;
+  --danger:#ff453a;
+  --header-bg:rgba(22,22,25,.85);
+  --input-bg:#202024;
+  --pdf-frame-bg:#121215;
+  --radius:16px;
+}
+
+/* TEMA CLARO */
+:root[data-theme="light"]{
+  --blue:#0066cc;
+  --blue-dark:#004b99;
   --ink:#1d1d1f;
   --muted:#86868b;
   --line:#d2d2d7;
   --card:#ffffff;
   --bg:#f5f5f7;
-  --danger:#ff3b30;
-  --radius:14px;
+  --danger:#d70015;
+  --header-bg:rgba(255,255,255,.85);
+  --input-bg:#fbfbfd;
+  --pdf-frame-bg:#e8e8ed;
+  --radius:16px;
 }
-*{box-sizing:border-box}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
 html,body{
   margin:0;padding:0;background:var(--bg);color:var(--ink);
-  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x:hidden;
 }
-body{min-height:100vh;padding-bottom:86px}
+body{min-height:100vh; padding-bottom: calc(90px + env(safe-area-inset-bottom));}
 button,input,textarea,select{font:inherit}
 button{border:0;cursor:pointer;transition:all 0.2s ease}
 
-/* HEADER Y NAVEGACIÓN MÓVIL */
-.app-header{
-  position:fixed;z-index:50;top:0;left:0;right:0;height:62px;
-  background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(0,0,0,.08);
-  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+input, textarea, select {
+  -webkit-user-select: text;
+  user-select: text;
+  font-size: 16px !important;
+  font-family: inherit;
 }
-.brand{font-weight:700;letter-spacing:-.5px;font-size:18px}
+
+.material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+.app-header{
+  position:fixed;
+  z-index:50;
+  top:0;
+  left:0;
+  right:0;
+  height:calc(60px + env(safe-area-inset-top));
+  padding-top:env(safe-area-inset-top);
+  background: rgb(22 22 25 / 30%);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-left:16px;
+  padding-right:16px;
+}
+.brand{font-weight:700;letter-spacing:-.5px;font-size:18px;color:var(--ink)}
 .brand small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;letter-spacing:0}
 .header-actions{display:flex;gap:8px;align-items:center}
 .install-top-btn{display:none;background:var(--blue);color:#fff;padding:8px 12px;border-radius:10px;font-weight:600;font-size:13px}
-.clear-btn{background:rgba(255,59,48,0.1);color:var(--danger);padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px}
+.clear-btn{background:rgba(255,69,58,0.15);color:var(--danger);padding:8px 12px;border-radius:10px;font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px}
+.theme-toggle-btn{background:var(--input-bg);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:12px;display:grid;place-items:center;cursor:pointer}
 
-main{padding:82px 14px 20px;max-width:720px;margin:auto}
-.tab{display:none;animation:fadeIn 0.3s ease}
+main{padding:calc(72px + env(safe-area-inset-top)) 16px 20px;max-width:720px;margin:auto}
+.tab{display:none;animation:fadeIn 0.25s ease}
 .tab.active{display:block}
-@keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
-.section-title{font-size:24px;font-weight:700;margin:8px 2px 18px;letter-spacing:-0.5px}
+.section-title{font-size:26px;font-weight:700;margin:10px 2px 18px;letter-spacing:-0.5px;color:var(--ink)}
 
 .card{
-  background:var(--card);border:1px solid rgba(0,0,0,.05);border-radius:var(--radius);
-  padding:20px;margin-bottom:16px;box-shadow:0 4px 24px rgba(0,0,0,.04)
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.04)
 }
 .card h3{margin:0 0 16px;font-size:15px;font-weight:600;color:var(--ink)}
 .grid{display:grid;grid-template-columns:1fr;gap:14px}
 .field{display:flex;flex-direction:column;gap:6px}
 label{font-size:12px;color:var(--muted);font-weight:600}
 input,textarea,select{
-  width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;
-  padding:12px 14px;outline:none;transition:.15s;font-size:14px;
+  width:100%;border:1px solid var(--line);border-radius:12px;background:var(--input-bg);
+  color:var(--ink);padding:12px 14px;outline:none;transition:.15s;
 }
-textarea{min-height:80px;resize:vertical}
-input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,122,255,.15)}
+textarea{min-height:88px;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(70,152,198,.2)}
 
-/* CONCEPTOS */
+/* ESTILOS PARA SERVICIOS PREDEFINIDOS */
+.presets-container{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.preset-chip{
+  background:var(--input-bg);border:1px solid var(--line);color:var(--ink);
+  padding:8px 12px;border-radius:10px;font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:6px;cursor:pointer;transition:.15s;
+}
+.preset-chip:hover{border-color:var(--blue);color:var(--blue);background:rgba(70,152,198,0.05)}
+
 .items-head{display:none}
 .item-row{
-  display:grid;grid-template-columns:1fr 60px 100px 40px;gap:8px;align-items:center;margin-bottom:12px;
-  background:#f9f9fb;padding:12px;border-radius:12px;border:1px solid var(--line);
+  display:flex;flex-direction:column;gap:10px;margin-bottom:14px;
+  background:var(--input-bg);padding:14px;border-radius:14px;border:1px solid var(--line);
 }
-.item-row input{padding:10px;font-size:14px}
-.item-row .del{height:40px;width:40px;border-radius:10px;background:rgba(255,59,48,0.1);color:var(--danger);font-size:20px}
+.item-row input{padding:12px}
+.item-row-bottom{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;align-items:end}
+.item-subfield{display:flex;flex-direction:column;gap:4px}
+.item-subfield label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase}
+.item-row .del{height:46px;width:44px;border-radius:12px;background:rgba(255,69,58,0.15);color:var(--danger);display:grid;place-items:center;cursor:pointer}
 .add-btn{
-  width:100%;background:rgba(0,122,255,0.08);color:var(--blue);
-  border-radius:10px;padding:14px;font-weight:600;margin-top:8px;font-size:14px;
+  width:100%;background:rgba(70,152,198,0.12);color:var(--blue);
+  border-radius:12px;padding:14px;font-weight:600;margin-top:6px;font-size:15px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.add-btn:hover{background:rgba(0,122,255,0.15)}
 .small-note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
 
 .logo-wrap{display:flex;align-items:center;gap:16px}
-.logo-preview{width:150px;height:150px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;overflow:hidden;color:#aaa;font-size:11px;font-weight:600;text-align:center;background:#fafafa}
+.logo-preview{width:110px;height:110px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:11px;font-weight:600;text-align:center;background:var(--input-bg)}
 .logo-preview img{width:100%;height:100%;object-fit:contain}
-.file-btn{position:relative;overflow:hidden;background:#e5e5ea;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;color:var(--ink)}
+.file-btn{position:relative;overflow:hidden;background:var(--line);border-radius:12px;padding:12px 18px;font-size:14px;font-weight:600;color:var(--ink)}
 .file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 
 .summary{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:15px;align-items:center}
-.summary strong{font-size:17px;font-weight:600}
-.summary .total{padding-top:12px;border-top:1px solid var(--line);margin-top:4px;font-weight:700;font-size:20px}
+.summary strong{font-size:17px;font-weight:600;color:var(--ink)}
+.summary .total{padding-top:12px;border-top:1px solid var(--line);margin-top:4px;font-weight:700;font-size:20px;color:var(--blue)}
 .save-state{font-size:12px;color:var(--muted);text-align:center;margin:12px 0 0}
-.save-current{width:100%;margin-top:16px;background:var(--blue);color:#fff;border-radius:12px;padding:14px;font-weight:600;font-size:15px;box-shadow:0 4px 12px rgba(0,122,255,.25)}
+.save-current{width:100%;margin-top:16px;background:var(--blue);color:#fff;border-radius:14px;padding:14px;font-weight:600;font-size:16px;box-shadow:0 4px 14px rgba(70,152,198,.3)}
 
 .preview-shell{padding:0;margin:0 -2px}
 .preview-note{font-size:12px;color:var(--muted);margin:0 2px 12px}
 .pdf-frame{
-  width:100%;overflow:auto;border-radius:14px;
-  box-shadow:0 8px 30px rgba(0,0,0,.1);background:#d1d1d6;padding:12px;
+  width:100%;overflow:auto;border-radius:16px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);background:var(--pdf-frame-bg);padding:12px;
 }
 #pdf_template{
   width:210mm;height:296.8mm;background:#fff;position:relative;overflow:hidden;
-  margin:0 auto;color:#1d1d1f;font-family:Arial,Helvetica,sans-serif;
-  box-shadow:0 4px 16px rgba(0,0,0,.08); page-break-after: avoid; break-after: avoid;
+  margin:0 auto;color:#1d1d1f; 
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-shadow:0 4px 16px rgba(0,0,0,.2); page-break-after: avoid; break-after: avoid;
 }
-.pdf-top{height:42mm;background:var(--blue);color:#fff;padding:6mm 10mm 5mm;position:relative}
-.pdf-top h1{margin:0 0 4mm;font-family:"Bebas Neue",Arial,sans-serif;font-stretch:condensed;font-size:40px;line-height:1;font-weight:900;letter-spacing:1px}
+
+/* BLOQUE SUPERIOR AZUL DE ESQUINA A ESQUINA (ANCHO TOTAL) */
+.pdf-top{
+  width: 100%;
+  height: 42mm;
+  background: #4698c6;
+  color: #fff;
+  padding: 6mm 10mm 5mm 10mm;
+  position: relative;
+  box-sizing: border-box;
+}
+.pdf-top h1{margin:0 0 3mm;font-family:"Bebas Neue", Arial, sans-serif;font-size:40px;line-height:1;font-weight:900;letter-spacing:1px}
 .pdf-top .issuer{font-size:10pt;line-height:1.3}
 .pdf-logo{position:absolute;right:10mm;top:6mm;width:30mm;height:16mm;display:flex;align-items:center;justify-content:flex-end}
 .pdf-logo img{max-height:150px;object-fit:contain}
 .pdf-meta{position:absolute;right:10mm;bottom:6mm;text-align:right;font-size:8.5pt;line-height:1.4}
-.pdf-client{height:42mm;padding:6mm 8.5mm 4mm;display:grid;grid-template-columns:1fr 1fr;gap:11mm}
-.pdf-client .label{font-size:11.5pt;color:var(--blue);font-weight:400;margin-bottom:2mm}
-.pdf-client .value{font-size:11pt;font-weight:800;line-height:1.08;margin-bottom:1.5mm}
+
+.pdf-client{padding:6mm 8.5mm 4mm;display:grid;grid-template-columns:1fr 1fr;gap:11mm}
+.pdf-client .label{font-size:11.5pt;color:#4698c6;font-weight:600;margin-bottom:2mm}
+.pdf-client .value{font-size:11pt;font-weight:700;line-height:1.08;margin-bottom:1.5mm}
 .pdf-client .line{font-size:9.5pt;color:#555;line-height:1.35}
 .client-address-wrap{position:relative;padding-right:25mm}
 .client-cp{position:absolute;right:0;top:0;font-size:9.5pt;color:#555;line-height:1.35}
-.pdf-table-head{height:12mm;background:var(--blue);color:#fff;display:grid;grid-template-columns:43% 14.5% 16% 12% 14.5%;align-items:center;padding:0 8.5mm;font-weight:800;font-size:10.5pt}
+.pdf-table-head{height:12mm;background:#4698c6;color:#fff;display:grid;grid-template-columns:43% 14.5% 16% 12% 14.5%;align-items:center;padding:0 8.5mm;font-weight:700;font-size:10.5pt}
 .pdf-table-head div:nth-child(n+2){text-align:center}
 .pdf-items{padding:5mm 7mm 0 7mm;max-height:85mm;overflow:hidden;}
 .pdf-item{display:grid;grid-template-columns:43% 14.5% 16% 12% 14.5%;padding:0 1.5mm;min-height:12mm;align-items:start;font-size:9.5pt}
 .pdf-item > div:not(:first-child){text-align:center}
 .pdf-desc{text-transform:uppercase;line-height:1.25}
 .pdf-right{margin-left:51.5%;width:48.5%;padding:1mm 8.5mm 0 0}
-.pdf-totals{font-size:10.5pt;font-weight:800;line-height:1.3}
+.pdf-totals{font-size:10.5pt;font-weight:700;line-height:1.3}
 .pdf-totals .r{display:grid;grid-template-columns:1fr auto}
-.pdf-paybox{margin-top:3mm;background:linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(130, 130, 130, 1) 100%);color:#fff;padding:3mm 5mm;display:grid;grid-template-columns:1fr auto;align-items:center;font-weight:800;font-size:10pt}
+.pdf-paybox{margin-top:3mm;background:linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(130,130,130,1) 100%);color:#fff;padding:3mm 5mm;display:grid;grid-template-columns:1fr auto;align-items:center;font-weight:700;font-size:10pt}
 .pdf-words{margin-top:2.5mm;font-size:9pt;line-height:1.2}
-.pdf-words b{font-weight:900}
+.pdf-words b{font-weight:700}
 .pdf-payments{position:absolute;left:10mm;bottom:36mm;width:84mm;font-size:9.5pt;line-height:1.35}
 .pdf-payments h3{font-size:10.5pt;margin:0 0 3mm}
-.pdf-payments .bank-title{font-weight:900;margin-bottom:1mm}
+.pdf-payments .bank-title{font-weight:700;margin-bottom:1mm}
 .pdf-terms{position:absolute;left:15mm;right:15mm;bottom:18mm;text-align:center;font-size:8.5pt;line-height:1.35}
-.pdf-footer{position:absolute;left:0;right:0;bottom:0;height:10mm;border-top:0.5mm solid var(--blue);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:11.5pt;font-weight:900}
+.pdf-footer{position:absolute;left:0;right:0;bottom:0;height:10mm;border-top:0.5mm solid #4698c6;display:flex;align-items:center;justify-content:center;color:#4698c6;font-size:11.5pt;font-weight:700}
 
 .fab{
-  position:fixed;right:20px;bottom:90px;z-index:45;background:var(--ink);color:#fff;
-  padding:16px 20px;border-radius:100px;box-shadow:0 10px 25px rgba(0,0,0,.2);font-weight:600;
-  display:flex;align-items:center;gap:8px;font-size:15px;
+  position:fixed;right:20px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:45;
+  background:var(--ink);color:var(--bg);
+  padding:16px 22px;border-radius:100px;box-shadow:0 10px 25px rgba(0,0,0,.25);font-weight:600;
+  display:flex;align-items:center;gap:8px;font-size:15px;cursor:pointer;
 }
+
 .bottom-nav{
-  position:fixed;z-index:50;bottom:0;left:0;right:0;height:74px;
-  background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid rgba(0,0,0,.08);display:flex;padding-bottom:env(safe-area-inset-bottom)
+  position:fixed;
+  z-index:50;
+  bottom:0;
+  left:0;
+  right:0;
+  height:calc(64px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  background: rgb(22 22 25 / 27%);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
+  border-top:1px solid var(--line);
+  display:flex;
 }
 .nav-btn{
   flex:1;background:none;color:var(--muted);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600
+  align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;cursor:pointer;
 }
-.nav-btn .ico{font-size:22px;line-height:1}
+.nav-btn .material-symbols-rounded{font-size:24px;}
 .nav-btn.active{color:var(--blue)}
 
-/* PWA BANNER & MODAL OS ENHANCEMENTS */
 .pwa-banner{
-  background:linear-gradient(135deg, var(--blue), var(--blue-dark));
-  color:#fff;padding:16px;border-radius:var(--radius);margin-bottom:16px;
-  display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,122,255,0.2);
+  background:var(--card);border:1px solid rgba(70,152,198,0.3);
+  color:var(--ink);padding:16px;border-radius:var(--radius);margin-bottom:16px;
+  display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.1);
 }
 .pwa-banner-content{display:flex;justify-content:space-between;align-items:center}
-.pwa-banner h4{margin:0 0 2px;font-size:16px;font-weight:700}
-.pwa-banner p{margin:0;font-size:13px;opacity:0.9}
-.pwa-install-btn{background:#fff;color:var(--blue);padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;white-space:nowrap}
-.ios-steps{font-size:12px;background:rgba(255,255,255,0.15);padding:10px;border-radius:8px;line-height:1.4}
-.os-badge{display:inline-block;font-size:10px;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:6px;margin-bottom:4px;font-weight:700;text-transform:uppercase}
+.pwa-banner h4{margin:0 0 2px;font-size:15px;font-weight:700}
+.pwa-banner p{margin:0;font-size:13px;opacity:0.8}
+.pwa-install-btn{background:var(--blue);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;white-space:nowrap}
+.ios-steps{font-size:12px;background:var(--input-bg);padding:12px;border-radius:10px;line-height:1.45}
+.os-badge{display:inline-block;font-size:10px;background:rgba(70,152,198,0.2);color:var(--blue);padding:3px 8px;border-radius:6px;margin-bottom:4px;font-weight:700;text-transform:uppercase}
 
-/* MODAL PERSONALIZADO (Sin usar alert ni confirm) */
 .custom-modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;
   display:none;align-items:center;justify-content:center;padding:20px;
   backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
 }
 .custom-modal{
-  background:#fff;border-radius:16px;width:100%;max-width:380px;
-  padding:24px;box-shadow:0 10px 40px rgba(0,0,0,0.2);text-align:center;
+  background:var(--card);border:1px solid var(--line);border-radius:20px;width:100%;max-width:360px;
+  padding:24px;box-shadow:0 10px 40px rgba(0,0,0,0.3);text-align:center;
   animation:modalScale 0.25s ease;
 }
-@keyframes modalScale { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+@keyframes modalScale { from{transform:scale(0.92);opacity:0} to{transform:scale(1);opacity:1} }
 .custom-modal h3{margin:0 0 10px;font-size:18px;font-weight:700;color:var(--ink)}
 .custom-modal p{margin:0 0 20px;font-size:14px;color:var(--muted);line-height:1.5}
 .custom-modal-actions{display:flex;gap:10px}
-.custom-modal-actions button{flex:1;padding:12px;border-radius:10px;font-weight:600;font-size:14px}
-.modal-btn-cancel{background:#e5e5ea;color:var(--ink)}
+.custom-modal-actions button{flex:1;padding:13px;border-radius:12px;font-weight:600;font-size:14px}
+.modal-btn-cancel{background:var(--input-bg);color:var(--ink);border:1px solid var(--line)}
 .modal-btn-confirm{background:var(--blue);color:#fff}
 
 @media (min-width:768px){
   body{padding-bottom:0;display:flex;}
   .bottom-nav{
     top:0; bottom:0; left:0; right:auto; width:260px; height:auto;
-    flex-direction:column; justify-content:flex-start; padding-top:80px;
-    border-top:none; border-right:1px solid rgba(0,0,0,.08);
-    background:rgba(244, 245, 247, 0.6); 
+    flex-direction:column; justify-content:flex-start; padding-top:40px;
+    border-top:none; border-right:1px solid var(--line);
+    background:var(--header-bg); padding-bottom:0;
   }
   .nav-btn{
     flex:none; flex-direction:row; justify-content:flex-start; gap:14px;
-    padding:12px 20px; margin:4px 16px; border-radius:10px; font-size:15px;
+    padding:14px 20px; margin:4px 16px; border-radius:12px; font-size:15px;
   }
-  .nav-btn .ico{width:24px; text-align:center;}
-  .nav-btn.active{background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,.06); color:var(--blue);}
-  .app-header{left:260px; padding:0 32px;}
+  .nav-btn .material-symbols-rounded{width:24px; text-align:center;}
+  .nav-btn.active{background:var(--input-bg); box-shadow:0 2px 8px rgba(0,0,0,.05); color:var(--blue);}
+  .app-header{left:260px; padding:0 32px; height:64px; padding-top:0;}
   .install-top-btn{display:inline-block;}
   main{margin:0; padding:100px 40px 60px 300px; max-width:1200px; flex:1;}
   .grid{grid-template-columns:1fr 1fr 1fr; gap:16px;}
   .field.full{grid-column:1 / -1;}
-  .item-row{
-    background:transparent; border:none; border-bottom:1px solid var(--line);
-    border-radius:0; padding:8px 0; grid-template-columns:1fr 100px 140px 40px; margin-bottom:0;
-  }
+  
   .items-head{
     display:grid; grid-template-columns:1fr 100px 140px 40px; gap:8px;
     padding-bottom:8px; border-bottom:2px solid var(--line); margin-bottom:8px;
   }
   .items-head span{font-size:12px; color:var(--muted); font-weight:700; text-transform:uppercase}
+  .item-row{
+    background:transparent; border:none; border-bottom:1px solid var(--line);
+    border-radius:0; padding:8px 0; display:grid; grid-template-columns:1fr 100px 140px 40px; gap:8px; align-items:center; margin-bottom:0;
+  }
+  .item-row-bottom{display:contents}
+  .item-subfield{display:contents}
+  .item-subfield label{display:none}
+  .item-row .del{height:40px;width:40px}
+
   .preview-shell{display:flex; justify-content:center;}
   .pdf-frame{
-    padding:40px; background:#d1d1d6; border-radius:16px; 
-    box-shadow:inset 0 2px 10px rgba(0,0,0,.05); max-height:none;
+    padding:40px; border-radius:16px; 
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.1); max-height:none;
   }
   #pdf_template{transform-origin:top center;}
   .fab{bottom:40px; right:40px; padding:18px 28px; font-size:16px;}
 }
 
 @media print{
-  body{background:#fff}
+  body{background:#fff!important; color:#000!important}
   .app-header,.bottom-nav,.fab,main>.section-title,.preview-note,.pwa-banner{display:none!important}
   main{padding:0;max-width:none}
   .tab{display:block!important}
   .pdf-frame{box-shadow:none;padding:0;overflow:visible;background:#fff}
   #pdf_template{margin:0;box-shadow:none; page-break-after: avoid; break-after: avoid;}
 }
+/* Ajuste automático del logo en modo oscuro */
+/* Ajuste de brillo/inversión solo para el Header y el PDF en modo oscuro */
+:root[data-theme="dark"] .brand img {
+  filter: brightness(0) invert(1);
+}
+
+/* El cuadro de vista previa del editor mantiene su color original y fondo blanco para verse bien */
+:root[data-theme="dark"] .logo-preview {
+  background: #ffffff;
+}
+
+:root[data-theme="dark"] .logo-preview img {
+  filter: none;
+}
 </style>
 </head>
 
 <body>
 <header class="app-header">
-  <div class="brand">valtren<small id="osStatusIndicator">Sistema de Cotizaciones</small></div>
+  <div class="brand"><img src="logo.png" height="15mm" alt="" srcset=""><small id="osStatusIndicator">Sistema de Cotizaciones</small></div>
   <div class="header-actions">
+    <button class="theme-toggle-btn" id="themeToggleBtn" title="Cambiar modo claro/oscuro">
+      <span class="material-symbols-rounded" id="themeIcon">dark_mode</span>
+    </button>
     <button class="install-top-btn" id="installTopBtn" style="display:none;">Instalar App</button>
-    <button class="clear-btn" id="clearBtn">Nueva cotización</button>
+    <button class="clear-btn" id="clearBtn">
+      <span class="material-symbols-rounded" style="font-size:18px;">add_circle</span> Nueva
+    </button>
   </div>
 </header>
 
@@ -257,7 +364,6 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
   <section id="editTab" class="tab active">
     <div class="section-title">Edición</div>
 
-    <!-- PWA Install Banner Container -->
     <div id="pwaBannerContainer"></div>
 
     <div class="card">
@@ -305,11 +411,34 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
 
     <div class="card">
       <h3>Conceptos de Venta</h3>
+      
+      <!-- SERVICIOS PREDEFINIDOS -->
+      <label style="display:block;margin-bottom:8px">Servicios / Productos Frecuentes (Clic para agregar):</label>
+      <div class="presets-container" id="presetsContainer">
+        <div class="preset-chip" data-desc="REPARACIÓN DE CILINDRO HIDRÁULICO (CAMBIO DE SELLOS Y PRUEBA)" data-price="1500">
+          <span class="material-symbols-rounded" style="font-size:16px">build</span> Rep. Cilindro Hidráulico
+        </div>
+        <div class="preset-chip" data-desc="MANTENIMIENTO PREVENTIVO DE SISTEMA HIDRÁULICO" data-price="2500">
+          <span class="material-symbols-rounded" style="font-size:16px">settings</span> Mantenimiento Preventivo
+        </div>
+        <div class="preset-chip" data-desc="FABRICACIÓN DE KIT DE EMPAQUES A MEDIDA" data-price="800">
+          <span class="material-symbols-rounded" style="font-size:16px">category</span> Kit de Empaques
+        </div>
+        <div class="preset-chip" data-desc="DIAGNÓSTICO Y REVISIÓN TÉCNICA EN CAMPO" data-price="1000">
+          <span class="material-symbols-rounded" style="font-size:16px">engineering</span> Diagnóstico Técnico
+        </div>
+        <div class="preset-chip" data-desc="REFACCIÓN / REPUESTO PARA MAQUINARIA" data-price="500">
+          <span class="material-symbols-rounded" style="font-size:16px">precision_manufacturing</span> Refacción Maquinaria
+        </div>
+      </div>
+
       <div class="items-head">
         <span>Descripción del Servicio/Producto</span><span>Cant.</span><span>Precio Unit.</span><span></span>
       </div>
       <div id="items"></div>
-      <button class="add-btn" id="addItem">＋ Añadir concepto</button>
+      <button class="add-btn" id="addItem">
+        <span class="material-symbols-rounded" style="font-size:18px;">add</span> Añadir concepto vacío
+      </button>
     </div>
 
     <div class="card">
@@ -403,7 +532,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
       </div>
     </div>
     <button class="fab" id="downloadPdf">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <span class="material-symbols-rounded">download</span>
       Exportar PDF
     </button>
   </section>
@@ -412,8 +541,8 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
     <div class="section-title">Historial de cotizaciones</div>
     <div class="card">
       <div class="history-toolbar" style="display:flex;gap:10px;margin-bottom:16px">
-        <button class="primary-btn" id="newQuote" style="flex:1;border-radius:10px;padding:14px;font-weight:600;font-size:14px;background:var(--blue);color:#fff">Crear nueva</button>
-        <button class="secondary-btn" id="saveQuoteTop" style="flex:1;border-radius:10px;padding:14px;font-weight:600;font-size:14px;background:#e5e5ea;color:var(--ink)">Guardar actual</button>
+        <button class="primary-btn" id="newQuote" style="flex:1;border-radius:12px;padding:14px;font-weight:600;font-size:14px;background:var(--blue);color:#fff">Crear nueva</button>
+        <button class="secondary-btn" id="saveQuoteTop" style="flex:1;border-radius:12px;padding:14px;font-weight:600;font-size:14px;background:var(--input-bg);border:1px solid var(--line);color:var(--ink)">Guardar actual</button>
       </div>
       <div class="small-note">Los datos se almacenan localmente en tu navegador.</div>
     </div>
@@ -422,12 +551,20 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-btn active" data-tab="editTab"><span class="ico">✎</span><span>Editor</span></button>
-  <button class="nav-btn" data-tab="previewTab"><span class="ico">▣</span><span>Vista Previa</span></button>
-  <button class="nav-btn" data-tab="historyTab"><span class="ico">◷</span><span>Historial</span></button>
+  <button class="nav-btn active" data-tab="editTab">
+    <span class="material-symbols-rounded">edit_square</span>
+    <span>Editor</span>
+  </button>
+  <button class="nav-btn" data-tab="previewTab">
+    <span class="material-symbols-rounded">visibility</span>
+    <span>Vista Previa</span>
+  </button>
+  <button class="nav-btn" data-tab="historyTab">
+    <span class="material-symbols-rounded">history</span>
+    <span>Historial</span>
+  </button>
 </nav>
 
-<!-- Custom Modal Dialog (Replaces alert/confirm) -->
 <div class="custom-modal-overlay" id="customModalOverlay">
   <div class="custom-modal">
     <h3 id="modalTitle">Atención</h3>
@@ -440,15 +577,30 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 
 </div>
 
 <script>
-// Registro de Service Worker para PWA Offline
+function initTheme() {
+  const savedTheme = localStorage.getItem('valtren_theme') || 'dark';
+  setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('valtren_theme', theme);
+  const isDark = theme === 'dark';
+  $('#themeIcon').text(isDark ? 'dark_mode' : 'light_mode');
+  $('#metaThemeColor').attr('content', isDark ? '#0a0a0c' : '#f5f5f7');
+}
+
+$('#themeToggleBtn').on('click', function() {
+  const current = document.documentElement.getAttribute('data-theme');
+  setTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+initTheme();
+
 if ('serviceWorker' in navigator) {
   const swCode = `
-    self.addEventListener('install', e => {
-      e.waitUntil(self.skipWaiting());
-    });
-    self.addEventListener('activate', e => {
-      e.waitUntil(self.clients.claim());
-    });
+    self.addEventListener('install', e => { e.waitUntil(self.skipWaiting()); });
+    self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
     self.addEventListener('fetch', e => {
       e.respondWith(
         caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match(e.request)))
@@ -460,36 +612,15 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
 }
 
-// ----------------------------------------------------
-// DETECCIÓN AVANZADA DE SISTEMA OPERATIVO Y DISPOSITIVO
-// ----------------------------------------------------
 function detectOS() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   const platform = navigator.platform || '';
-
-  // Detección iOS (iPhone, iPad, iPod con soporte para iPadOS modernos)
   const isIOSDevice = /iPad|iPhone|iPod/.test(ua) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(platform));
-  if (isIOSDevice) {
-    return { name: 'iOS', type: 'ios', mobile: true };
-  }
-
-  // Detección Android
-  if (/android/i.test(ua)) {
-    return { name: 'Android', type: 'android', mobile: true };
-  }
-
-  // Detección Otros Móviles
-  if (/iPad|iPhone|iPod|android|blackberry|mini|windows ce|palm/i.test(ua)) {
-    return { name: 'Móvil', type: 'mobile', mobile: true };
-  }
-
-  // Escritorio (Windows, Mac, Linux)
-  if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(platform) || /Mac OS X/.test(ua)) {
-    return { name: 'macOS', type: 'desktop', mobile: false };
-  }
-  if (/Win32|Win64|Windows|WinCE/.test(platform)) {
-    return { name: 'Windows', type: 'desktop', mobile: false };
-  }
+  if (isIOSDevice) return { name: 'iOS', type: 'ios', mobile: true };
+  if (/android/i.test(ua)) return { name: 'Android', type: 'android', mobile: true };
+  if (/iPad|iPhone|iPod|android|blackberry|mini|windows ce|palm/i.test(ua)) return { name: 'Móvil', type: 'mobile', mobile: true };
+  if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(platform) || /Mac OS X/.test(ua)) return { name: 'macOS', type: 'desktop', mobile: false };
+  if (/Win32|Win64|Windows|WinCE/.test(platform)) return { name: 'Windows', type: 'desktop', mobile: false };
   return { name: 'Escritorio', type: 'desktop', mobile: false };
 }
 
@@ -498,37 +629,26 @@ const currentOS = detectOS();
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
 function initPwaInstall() {
-  // Actualizar indicador en el encabezado con el OS detectado
   $('#osStatusIndicator').text(`Cotizaciones · ${currentOS.name}`);
+  if (isStandalone) return; 
 
-  if (isStandalone) {
-    // Ya está ejecutándose como PWA instalada
-    return; 
-  }
-
-  // Escuchar evento de instalación nativa (Android / Chrome Desktop)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     renderInstallBanner('android');
   });
 
-  // Mostrar banners específicos según el SO detectado si no hay prompt nativo disponible
   setTimeout(() => {
     if (!deferredPrompt && !isStandalone) {
-      if (currentOS.type === 'ios') {
-        renderInstallBanner('ios');
-      } else if (currentOS.type === 'android') {
-        renderInstallBanner('android-manual');
-      } else if (currentOS.type === 'desktop') {
-        renderInstallBanner('desktop');
-      }
+      if (currentOS.type === 'ios') renderInstallBanner('ios');
+      else if (currentOS.type === 'android') renderInstallBanner('android-manual');
+      else if (currentOS.type === 'desktop') renderInstallBanner('desktop');
     }
   }, 600);
 }
 
 function renderInstallBanner(type) {
-  const $container = $('#pwaBannerContainer');
+  const $container =$('#pwaBannerContainer');
   $('#installTopBtn').show();
 
   if (type === 'android' || type === 'android-manual') {
@@ -538,7 +658,7 @@ function renderInstallBanner(type) {
         <div class="pwa-banner-content">
           <div>
             <h4>Instala Valtren en tu dispositivo</h4>
-            <p>Accede con un toque y trabaja sin conexión a internet.</p>
+            <p>Accede con un toque y trabaja sin conexión.</p>
           </div>
           <button class="pwa-install-btn" id="pwaTriggerBtn">Instalar App</button>
         </div>
@@ -547,14 +667,14 @@ function renderInstallBanner(type) {
   } else if (type === 'ios') {
     $container.html(`
       <div class="pwa-banner">
-        <span class="os-badge">iOS / iPhone / iPad Detectado</span>
+        <span class="os-badge">iOS / iPhone / iPad</span>
         <div>
           <h4>Instala Valtren en tu Pantalla de Inicio</h4>
-          <p>Disfruta de la experiencia de aplicación nativa:</p>
+          <p>Disfruta de la experiencia nativa:</p>
         </div>
         <div class="ios-steps" style="margin-top:8px">
-          1. Toca el botón <b>Compartir</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> en tu navegador Safari.<br>
-          2. Desplázate y selecciona <b>"Agregar a Inicio"</b> ⊕.
+          1. Toca el botón <b>Compartir</b> <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">ios_share</span> en Safari.<br>
+          2. Desplázate y selecciona <b>"Agregar a inicio"</b>.
         </div>
       </div>
     `);
@@ -565,7 +685,7 @@ function renderInstallBanner(type) {
         <div class="pwa-banner-content">
           <div>
             <h4>Instalar Valtren en tu Computadora</h4>
-            <p>Ten la aplicación lista en tu escritorio para generar cotizaciones al instante.</p>
+            <p>Ten la aplicación lista en tu escritorio.</p>
           </div>
           <button class="pwa-install-btn" id="pwaTriggerBtn">Instalar</button>
         </div>
@@ -584,44 +704,38 @@ $(document).on('click', '#pwaTriggerBtn, #installTopBtn', async () => {
     }
     deferredPrompt = null;
   } else if (currentOS.type === 'ios') {
-    showCustomModal('Instalación en iOS', 'Para instalar esta PWA en tu dispositivo iOS, abre este sitio en Safari, presiona el botón Compartir y selecciona "Agregar a Inicio".', false, null);
+    showCustomModal('Instalación en iOS', 'Abre este sitio en Safari, presiona el botón Compartir y selecciona "Agregar a inicio".', false, null);
   } else if (currentOS.type === 'android') {
-    showCustomModal('Instalación en Android', 'Abre el menú de opciones de tu navegador (los tres puntos arriba a la derecha) y selecciona "Instalar aplicación" o "Agregar a la pantalla principal".', false, null);
+    showCustomModal('Instalación en Android', 'Abre el menú de opciones de tu navegador (tres puntos arriba) y selecciona "Instalar aplicación".', false, null);
   } else {
-    showCustomModal('Instalación PWA', 'Haz clic en el icono de instalación ubicado en la barra de direcciones de tu navegador para instalar la aplicación en tu computadora.', false, null);
+    showCustomModal('Instalación PWA', 'Haz clic en el icono de instalación ubicado en la barra de direcciones de tu navegador.', false, null);
   }
 });
 
-// Reemplazo estricto de alert() y confirm() por Modal Personalizado
 function showCustomModal(title, message, showCancel = true, onConfirm = null) {
   $('#modalTitle').text(title);
   $('#modalMessage').text(message);
-  const $cancelBtn = $('#modalCancelBtn');
-  const $confirmBtn = $('#modalConfirmBtn');
+  const $cancelBtn =$('#modalCancelBtn');
+  const $confirmBtn =$('#modalConfirmBtn');
   
   if (!showCancel) {
-    $cancelBtn.hide();
-    $confirmBtn.text('Aceptar');
+    $cancelBtn.hide();$confirmBtn.text('Aceptar');
   } else {
     $cancelBtn.show();
-    $cancelBtn.text('Cancelar');
-    $confirmBtn.text('Aceptar');
+    $cancelBtn.text('Cancelar');$confirmBtn.text('Aceptar');
   }
 
   $('#customModalOverlay').css('display', 'flex');
 
-  $confirmBtn.off('click').on('click', () => {
-    $('#customModalOverlay').hide();
+  $confirmBtn.off('click').on('click', () => {$('#customModalOverlay').hide();
     if (typeof onConfirm === 'function') onConfirm(true);
   });
 
-  $cancelBtn.off('click').on('click', () => {
-    $('#customModalOverlay').hide();
+  $cancelBtn.off('click').on('click', () => {$('#customModalOverlay').hide();
     if (typeof onConfirm === 'function') onConfirm(false);
   });
 }
 
-// Lógica principal de cotizaciones
 $(function(){
   initPwaInstall();
 
@@ -717,10 +831,21 @@ $(function(){
     data.items.forEach((it,i)=>{
       $('#items').append(`
         <div class="item-row" data-index="${i}">
-          <input class="it-desc" placeholder="Servicio / producto" value="${esc(it.desc)}">
-          <input class="it-qty" type="number" min="0" step="1" value="${Number(it.qty)||0}">
-          <input class="it-price" type="number" min="0" step="0.01" value="${Number(it.price)||0}">
-          <button class="del" title="Eliminar">×</button>
+          <div class="item-subfield">
+            <label>Descripción</label>
+            <input class="it-desc" placeholder="Servicio o producto" value="${esc(it.desc)}">
+          </div>
+          <div class="item-row-bottom">
+            <div class="item-subfield">
+              <label>Cant.</label>
+              <input class="it-qty" type="number" min="0" step="1" value="${Number(it.qty)||0}">
+            </div>
+            <div class="item-subfield">
+              <label>Precio Unit.</label>
+              <input class="it-price" type="number" min="0" step="0.01" value="${Number(it.price)||0}">
+            </div>
+            <button class="del" title="Eliminar"><span class="material-symbols-rounded" style="font-size:20px;">close</span></button>
+          </div>
         </div>
       `);
     });
@@ -885,6 +1010,20 @@ $(function(){
     rows.last().find('.it-desc').focus();
   });
 
+  // EVENTO PARA AGREGAR SERVICIOS PREDEFINIDOS
+  $(document).on('click','.preset-chip',function(){
+    const desc=$(this).data('desc');
+    const price=Number($(this).data('price'))||0;
+    
+    // Si hay un solo elemento vacío, lo reemplazamos; si no, lo agregamos al final
+    if(data.items.length === 1 && !data.items[0].desc && data.items[0].price === 0){
+      data.items[0] = {desc: desc, qty: 1, price: price};
+    } else {
+      data.items.push({desc: desc, qty: 1, price: price});
+    }
+    renderForm(); calculate(); saveCurrent();
+  });
+
   $(document).on('click','.del',function(){
     const i=Number($(this).closest('.item-row').data('index'));
     data.items.splice(i,1);
@@ -902,10 +1041,8 @@ $(function(){
 
   $('.nav-btn').on('click',function(){
     const tab=$(this).data('tab');
-    $('.tab').removeClass('active');
-    $('#'+tab).addClass('active');
-    $('.nav-btn').removeClass('active');
-    $(this).addClass('active');
+    $('.tab').removeClass('active');$('#'+tab).addClass('active');
+    $('.nav-btn').removeClass('active');$(this).addClass('active');
     window.scrollTo({top:0,behavior:'smooth'});
   });
 
@@ -936,7 +1073,7 @@ $(function(){
       const total=subtotal*(1+rate);
       const date=q.date ? new Date(q.date+'T00:00:00').toLocaleDateString('es-MX') : 'Sin fecha';
       $list.append(`
-        <div class="history-item" style="background:var(--card);border:1px solid rgba(0,0,0,.05);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,.03)">
+        <div class="history-item" style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,.05)">
           <div class="history-item-top" style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
             <div><div class="history-folio" style="font-weight:700;font-size:16px;color:var(--ink)">${esc(q.folio||'Sin folio')}</div>
             <div class="history-client" style="font-size:14px;color:var(--muted);margin-top:4px">${esc(q.clientName||'Cliente sin nombre')}</div></div>
@@ -944,8 +1081,8 @@ $(function(){
           </div>
           <div class="history-meta" style="font-size:12px;color:var(--muted);margin-top:10px">Creada: ${esc(date)}</div>
           <div class="history-actions" style="display:flex;gap:8px;margin-top:14px">
-            <button class="load-history" data-id="${esc(q.id)}" style="flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:#f5f5f7;color:var(--ink)">Abrir y editar</button>
-            <button class="delete-history" data-id="${esc(q.id)}" style="flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(255,59,48,0.1);color:var(--danger)">Eliminar</button>
+            <button class="load-history" data-id="${esc(q.id)}" style="flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:var(--input-bg);border:1px solid var(--line);color:var(--ink)">Abrir y editar</button>
+            <button class="delete-history" data-id="${esc(q.id)}" style="flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(255,69,58,0.15);color:var(--danger)">Eliminar</button>
           </div>
         </div>`);
     });
@@ -997,7 +1134,7 @@ $(function(){
       console.error(err);
       showCustomModal('Error', 'No se pudo generar el PDF.', false, null);
     }finally{
-      btn.prop('disabled',false).html('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Exportar PDF');
+      btn.prop('disabled',false).html('<span class="material-symbols-rounded">download</span> Exportar PDF');
     }
   });
 });
