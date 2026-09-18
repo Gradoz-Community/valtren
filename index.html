@@ -97,10 +97,20 @@ html,body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x:hidden;
+  -webkit-user-select: none; /* Safari / iOS */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge */
+  user-select: none;         /* Estándar */
+  -webkit-touch-callout: none;
 }
 body{min-height:100vh; padding-bottom: calc(90px + env(safe-area-inset-bottom));}
 button,input,textarea,select{font:inherit}
 button{border:0;cursor:pointer;transition:all 0.2s ease}
+
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
 
 input, textarea, select {
   -webkit-user-select: text;
@@ -1294,6 +1304,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+document.addEventListener('contextmenu', function(e) {
+  // Si no es un campo de texto o input, bloquea el menú flotante
+  if (!e.target.closest('input, textarea')) {
+    e.preventDefault();
+  }
+});
 </script>
+
 </body>
 </html>
