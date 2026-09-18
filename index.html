@@ -26,6 +26,31 @@
 
 <style>
 /* TEMA OSCURO (Por defecto) */
+
+.preview-shell{
+  padding:0;
+  margin:0 -2px;
+  overflow: hidden; /* Evita desbordamientos globales en la app */
+  touch-action: pan-x pan-y; /* Permite el desplazamiento normal pero deja espacio para control personalizado o nativo */
+}
+
+.pdf-frame{
+  width:100%;
+  overflow:auto;
+  border-radius:16px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  background:var(--pdf-frame-bg);
+  padding:12px;
+  -webkit-overflow-scrolling: touch; /* Suavidad en iOS */
+}
+
+/* Contenedor interno escalable mediante JS */
+#pdf_template {
+  transform-origin: top center;
+  transition: transform 0.05s ease-out;
+  touch-action: none; /* Desactiva el zoom por defecto del navegador para controlarlo con precisión */
+}
+
 :root[data-theme="dark"]{
   --blue:#4698c6;
   --blue-dark:#2b759f;
