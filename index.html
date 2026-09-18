@@ -30,10 +30,8 @@
 .preview-shell{
   padding:0;
   margin:0 -2px;
-  overflow: hidden; /* Evita desbordamientos globales en la app */
-  touch-action: pan-x pan-y; /* Permite el desplazamiento normal pero deja espacio para control personalizado o nativo */
+  overflow: hidden; 
 }
-
 .pdf-frame{
   width:100%;
   overflow:auto;
@@ -41,14 +39,24 @@
   box-shadow:0 8px 30px rgba(0,0,0,.15);
   background:var(--pdf-frame-bg);
   padding:12px;
-  -webkit-overflow-scrolling: touch; /* Suavidad en iOS */
+  -webkit-overflow-scrolling: touch;
 }
-
-/* Contenedor interno escalable mediante JS */
-#pdf_template {
-  transform-origin: top center;
+#pdf_template{
+  width:210mm;
+  height:296.8mm;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+  margin:0 auto;
+  color:#1d1d1f; 
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-shadow:0 4px 16px rgba(0,0,0,.2); 
+  page-break-after: avoid; 
+  break-after: avoid;
+  /* Importante para que el zoom y la adaptación respondan bien */
+  transform-origin: top left;
   transition: transform 0.05s ease-out;
-  touch-action: none; /* Desactiva el zoom por defecto del navegador para controlarlo con precisión */
+  touch-action: none; 
 }
 
 :root[data-theme="dark"]{
@@ -1166,14 +1174,39 @@ $(function(){
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const frame = document.querySelector('.pdf-frame');
   const template = document.getElementById('pdf_template');
+  const frame = document.querySelector('.pdf-frame');
   
   let scale = 1;
   let startDist = 0;
   let isScaling = false;
 
-  // Función para obtener la distancia entre dos puntos táctiles
+  // Función para ajustar la hoja completa a la pantalla del celular al entrar
+  function fitToScreen() {
+    if (window.innerWidth < 768) { // Solo en dispositivos móviles
+      const frameWidth = frame.clientWidth - 24; // Restando los paddings
+      const a4PixelWidth = 794; // Ancho aproximado de A4 en píxeles web (210mm)
+      scale = frameWidth / a4PixelWidth;
+      template.style.transform = `scale(${scale})`;
+      
+      // Ajustamos la altura del contenedor padre para que no quede un espacio vacío gigante
+      const a4PixelHeight = 1123; // Alto aproximado de A4
+      frame.style.height = (a4PixelHeight * scale) + 24 + 'px';
+    } else {
+      scale = 1;
+      template.style.transform = 'scale(1)';
+      frame.style.height = 'auto';
+    }
+  }
+
+  // Ejecutar al cargar y al cambiar de pestaña a la vista previa
+  $('.nav-btn[data-tab="previewTab"]').on('click', function() {
+    setTimeout(fitToScreen, 100);
+  });
+  window.addEventListener('resize', fitToScreen);
+  fitToScreen();
+
+  // --- GESTOS DE ZOOM CON DOS DEDOS (PINCH TO ZOOM) ---
   function getDistance(touches) {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -1191,13 +1224,14 @@ document.addEventListener("DOMContentLoaded", function() {
   frame.addEventListener('touchmove', function(e) {
     if (!isScaling || e.touches.length !== 2) return;
     
-    e.preventDefault(); // Evita el zoom de la página entera del navegador
+    e.preventDefault();
     const currentDist = getDistance(e.touches);
     const factor = currentDist / startDist;
     
-    // Limitar el zoom mínimo (1x) y máximo (2.5x)
     let newScale = scale * factor;
-    newScale = Math.max(0.8, Math.min(newScale, 2.5));
+    // Límites de zoom: desde que se ve completa hasta un 3x de acercamiento
+    const minScale = window.innerWidth < 768 ? (frame.clientWidth - 24) / 794 : 0.8;
+    newScale = Math.max(minScale, Math.min(newScale, 3.0));
     
     template.style.transform = `scale(${newScale})`;
   }, { passive: false });
@@ -1205,11 +1239,10 @@ document.addEventListener("DOMContentLoaded", function() {
   frame.addEventListener('touchend', function(e) {
     if (e.touches.length < 2 && isScaling) {
       isScaling = false;
-      // Guardamos la escala actual aproximada tomando el transform actual si se desea
       const matrix = window.getComputedStyle(template).transform;
       if (matrix !== 'none') {
         const values = matrix.split('(')[1].split(')')[0].split(',');
-        scale = parseFloat(values[0]); // Extrae la escala actual de la matriz CSS
+        scale = parseFloat(values[0]);
       }
     }
   });
