@@ -1178,27 +1178,37 @@ document.addEventListener("DOMContentLoaded", function() {
   const frame = document.querySelector('.pdf-frame');
   
   let scale = 1;
+  let posX = 0;
+  let posY = 0;
+  
   let startDist = 0;
+  let startX = 0;
+  let startY = 0;
   let isScaling = false;
-  let initialTransformOrigin = 'top left';
 
-  // Función para ajustar la hoja completa a la pantalla del celular al entrar
+  // Ajuste inicial para móviles
   function fitToScreen() {
     if (window.innerWidth < 768) {
       const frameWidth = frame.clientWidth - 24; 
       const a4PixelWidth = 794; 
       scale = frameWidth / a4PixelWidth;
-      template.style.transformOrigin = 'top left';
-      template.style.transform = `scale(${scale})`;
+      posX = 0;
+      posY = 0;
+      updateTransform();
       
       const a4PixelHeight = 1123; 
       frame.style.height = (a4PixelHeight * scale) + 24 + 'px';
     } else {
       scale = 1;
-      template.style.transformOrigin = 'top center';
-      template.style.transform = 'scale(1)';
+      posX = 0;
+      posY = 0;
+      updateTransform();
       frame.style.height = 'auto';
     }
+  }
+
+  function updateTransform() {
+    template.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   }
 
   $('.nav-btn[data-tab="previewTab"]').on('click', function() {
@@ -1207,7 +1217,7 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener('resize', fitToScreen);
   fitToScreen();
 
-  // --- GESTOS DE ZOOM CENTRADOS EN LOS DEDOS ---
+  // Distancia entre dos dedos
   function getDistance(touches) {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -1215,16 +1225,12 @@ document.addEventListener("DOMContentLoaded", function() {
     );
   }
 
-  // Obtener el punto medio exacto entre los dos dedos relativo al documento
-  function getMidpoint(touches, rect) {
-    const clientX = (touches[0].clientX + touches[1].clientX) / 2;
-    const clientY = (touches[0].clientY + touches[1].clientY) / 2;
-    
-    // Convertir coordenadas de pantalla a porcentaje dentro de la plantilla
-    const x = ((clientX - rect.left) / rect.width) * 100;
-    const y = ((clientY - rect.top) / rect.height) * 100;
-    
-    return `${Math.max(0, Math.min(100, x))}% ${Math.max(0, Math.min(100, y))}%`;
+  // Punto medio entre los dos dedos
+  function getMidpoint(touches) {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2
+    };
   }
 
   frame.addEventListener('touchstart', function(e) {
@@ -1232,10 +1238,9 @@ document.addEventListener("DOMContentLoaded", function() {
       isScaling = true;
       startDist = getDistance(e.touches);
       
-      // Fijar el origen de la transformación justo donde están los dedos
-      const rect = template.getBoundingClientRect();
-      const origin = getMidpoint(e.touches, rect);
-      template.style.transformOrigin = origin;
+      const mid = getMidpoint(e.touches);
+      startX = mid.x;
+      startY = mid.y;
     }
   }, { passive: true });
 
@@ -1243,24 +1248,32 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!isScaling || e.touches.length !== 2) return;
     
     e.preventDefault();
+    
     const currentDist = getDistance(e.touches);
     const factor = currentDist / startDist;
     
     let newScale = scale * factor;
     const minScale = window.innerWidth < 768 ? (frame.clientWidth - 24) / 794 : 0.8;
-    newScale = Math.max(minScale, Math.min(newScale, 3.0));
+    newScale = Math.max(minScale, Math.min(newScale, 3.5)); // Límite de 3.5x de zoom
+
+    const mid = getMidpoint(e.touches);
     
-    template.style.transform = `scale(${newScale})`;
+    // Ajustar la posición (translate) para que el punto bajo los dedos no se mueva
+    const scaleChange = newScale / scale;
+    posX = mid.x - scaleChange * (mid.x - posX);
+    posY = mid.y - scaleChange * (mid.y - posY);
+    scale = newScale;
+    
+    startDist = currentDist;
+    startX = mid.x;
+    startY = mid.y;
+
+    updateTransform();
   }, { passive: false });
 
   frame.addEventListener('touchend', function(e) {
-    if (e.touches.length < 2 && isScaling) {
+    if (e.touches.length < 2) {
       isScaling = false;
-      const matrix = window.getComputedStyle(template).transform;
-      if (matrix !== 'none') {
-        const values = matrix.split('(')[1].split(')')[0].split(',');
-        scale = parseFloat(values[0]);
-      }
     }
   });
 });
