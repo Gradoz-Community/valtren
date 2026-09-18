@@ -1180,33 +1180,34 @@ document.addEventListener("DOMContentLoaded", function() {
   let scale = 1;
   let startDist = 0;
   let isScaling = false;
+  let initialTransformOrigin = 'top left';
 
   // Función para ajustar la hoja completa a la pantalla del celular al entrar
   function fitToScreen() {
-    if (window.innerWidth < 768) { // Solo en dispositivos móviles
-      const frameWidth = frame.clientWidth - 24; // Restando los paddings
-      const a4PixelWidth = 794; // Ancho aproximado de A4 en píxeles web (210mm)
+    if (window.innerWidth < 768) {
+      const frameWidth = frame.clientWidth - 24; 
+      const a4PixelWidth = 794; 
       scale = frameWidth / a4PixelWidth;
+      template.style.transformOrigin = 'top left';
       template.style.transform = `scale(${scale})`;
       
-      // Ajustamos la altura del contenedor padre para que no quede un espacio vacío gigante
-      const a4PixelHeight = 1123; // Alto aproximado de A4
+      const a4PixelHeight = 1123; 
       frame.style.height = (a4PixelHeight * scale) + 24 + 'px';
     } else {
       scale = 1;
+      template.style.transformOrigin = 'top center';
       template.style.transform = 'scale(1)';
       frame.style.height = 'auto';
     }
   }
 
-  // Ejecutar al cargar y al cambiar de pestaña a la vista previa
   $('.nav-btn[data-tab="previewTab"]').on('click', function() {
     setTimeout(fitToScreen, 100);
   });
   window.addEventListener('resize', fitToScreen);
   fitToScreen();
 
-  // --- GESTOS DE ZOOM CON DOS DEDOS (PINCH TO ZOOM) ---
+  // --- GESTOS DE ZOOM CENTRADOS EN LOS DEDOS ---
   function getDistance(touches) {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -1214,10 +1215,27 @@ document.addEventListener("DOMContentLoaded", function() {
     );
   }
 
+  // Obtener el punto medio exacto entre los dos dedos relativo al documento
+  function getMidpoint(touches, rect) {
+    const clientX = (touches[0].clientX + touches[1].clientX) / 2;
+    const clientY = (touches[0].clientY + touches[1].clientY) / 2;
+    
+    // Convertir coordenadas de pantalla a porcentaje dentro de la plantilla
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    
+    return `${Math.max(0, Math.min(100, x))}% ${Math.max(0, Math.min(100, y))}%`;
+  }
+
   frame.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
       isScaling = true;
       startDist = getDistance(e.touches);
+      
+      // Fijar el origen de la transformación justo donde están los dedos
+      const rect = template.getBoundingClientRect();
+      const origin = getMidpoint(e.touches, rect);
+      template.style.transformOrigin = origin;
     }
   }, { passive: true });
 
@@ -1229,7 +1247,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const factor = currentDist / startDist;
     
     let newScale = scale * factor;
-    // Límites de zoom: desde que se ve completa hasta un 3x de acercamiento
     const minScale = window.innerWidth < 768 ? (frame.clientWidth - 24) / 794 : 0.8;
     newScale = Math.max(minScale, Math.min(newScale, 3.0));
     
